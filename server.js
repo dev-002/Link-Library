@@ -1,12 +1,23 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const app = express();
 
+// Express Setup
+app.use(express.json());
+
+// Mongoose Connection
+const { connect } = require("./utilities/connect");
+connect();
+
 // Routes
-const HomeRoute = require("./routes/home");
+const AuthRoute = require("./routes/AuthRoute");
+const ListRoute = require("./routes/ListRoute");
 
-app.use("/", HomeRoute);
+app.use("/auth", AuthRoute);
+app.use("/list", ListRoute);
 
-app.listen(3000, () => {
-  console.log("Server Started at Port: 3000");
+app.listen(process.env.PORT, () => {
+  console.log(`Server Started at Port: process.env.PORT ${process.env.PORT}`);
 });
