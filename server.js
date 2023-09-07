@@ -19,5 +19,5 @@ app.use("/auth", AuthRoute);
 app.use("/list", ListRoute);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server Started at Port: process.env.PORT ${process.env.PORT}`);
+  console.log(`Server Started at Port: ${process.env.PORT}`);
 });

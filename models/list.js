@@ -21,7 +21,7 @@ const listSchema = new Schema({
     type: Boolean,
     required: true,
   },
-  user: {
+  user_id: {
     type: Schema.Types.ObjectId,
     ref: "user",
   },
