@@ -5,10 +5,11 @@ exports.PublicListController = async (req, res, next) => {
   const publicList = await List.find({ shared: true });
   const publicCategories = [];
 
-  const Users = await User.find();
-  for (const user of Users)
-    for (const category of user.categories)
-      if (!publicCategories.includes(category)) publicCategories.push(category);
+  publicList.forEach((obj) =>
+    !publicCategories.includes(obj.category)
+      ? publicCategories.push(obj.category)
+      : null
+  );
 
   return res.json({
     success: true,

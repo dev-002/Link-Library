@@ -62,12 +62,18 @@ exports.RemoveList = async (req, res, next) => {
         if (deleted.acknowledged) {
           // Function to check if only 1 list had category or more
           // if only 1 had that category then remove that category
-          /* const categoryCournt = user.categories.reduce((acc,)=>{}, 0);
-          if (categoryCount === 1) {
-            user.categories.filter((category) => category !== link.category);
-            await user.save();
-          }
-          */
+
+          // Check if any other list has same category under same user_id
+          const remainingDocuments = await List.find({
+            category: link.category,
+            user_id,
+          });
+          // if present then pull that from that user categories list
+          if (remainingDocuments.length === 0)
+            await User.updateOne(
+              { _id: user_id },
+              { $pull: { categories: link.category } }
+            );
 
           // Function to remove the deleted list from the user collections
           user.collections = user.collections.filter(({ _id }) => {
