@@ -126,3 +126,30 @@ exports.UpdateList = async (req, res, next) => {
     } else return res.json({ success: false, error: "No user Found" });
   } else return res.json({ success: false, error: "User Id not provided" });
 };
+
+exports.GetCategoryList = async (req, res, next) => {
+  const { user_id } = req.body;
+  const queryCategory = req.params.category;
+  // Check if user_id provided
+  if (user_id) {
+    const user = await User.findOne({ _id: user_id }).populate("collections");
+    //  Check if user is valid
+    if (user) {
+      // Check if category is valid
+      if (user.categories.includes(queryCategory)) {
+        // Fetch specific categories data list
+        const list = await List.find({ user_id, category: queryCategory });
+
+        return res.json({
+          success: true,
+          msg: `Category Fetched Successfully: ${queryCategory}`,
+          list,
+        });
+      } else
+        return res.json({
+          success: false,
+          error: "No such category exist",
+        });
+    } else return res.json({ success: false, error: "No user Found" });
+  } else return res.json({ success: false, error: "User Id not provided" });
+};

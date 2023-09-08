@@ -1,7 +1,8 @@
 Features To Be Added ->
 
 - Add Category Dropdown / New Category Option
-- Add Shared /Private Functionality
+- Add Logout Functionality
+  -? Add Refresh token ?
 
 Bugs To Be Resolved ->
 

@@ -19,6 +19,7 @@ const listSchema = new Schema({
   },
   shared: {
     type: Boolean,
+    // true - Public false - Private
     required: true,
   },
   user_id: {
