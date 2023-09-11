@@ -1,11 +1,17 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 
 const app = express();
 
+const corsOptions = {
+  origin: "http://localhost:5173",
+};
+
 // Express Setup
 app.use(express.json());
+app.use(cors(corsOptions));
 
 // Mongoose Connection
 const { connect } = require("./utilities/connect");
