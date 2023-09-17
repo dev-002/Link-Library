@@ -29,7 +29,7 @@ const Register = ({ setRegister }) => {
       console.log("Logged In:", response);
       if (response.status === 201) {
         setCookies("token", response.data.token);
-        navigate("/home");
+        navigate("/");
       }
     } catch (error) {
       console.log("Error Occured:", error, error.response);

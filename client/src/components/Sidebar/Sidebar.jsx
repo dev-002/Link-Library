@@ -12,7 +12,7 @@ const Sidebar = () => {
   const [user, setUser] = useState();
 
   const toggleSelect = (e) => {
-    console.log(e.target.name);
+    console.log(e);
   };
 
   const handleLogout = () => {
@@ -62,7 +62,7 @@ const Sidebar = () => {
                   <Nav.Link href="/link">User Library</Nav.Link>
                   <Nav.Link href="/public">Public Library</Nav.Link>
 
-                  <Nav.Link onClick={() => handleLogout}>Logout</Nav.Link>
+                  <Nav.Link onClick={() => handleLogout()}>Logout</Nav.Link>
                 </Nav>
               </Navbar.Collapse>
             </Container>
@@ -207,7 +207,7 @@ const Sidebar = () => {
                       border: "black solid ",
                       borderColor: "white",
                     }}
-                    onClick={() => handleLogout}
+                    onClick={() => handleLogout()}
                   >
                     <p className="h5 " style={{ color: "white" }}>
                       Logout

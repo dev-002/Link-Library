@@ -29,7 +29,7 @@ const Login = () => {
       });
       if (response.status === 200) {
         setCookies("token", response.data.token);
-        navigate("/home");
+        navigate("/");
       }
     } catch (error) {
       console.log("Error Occured:", error, error.response);
