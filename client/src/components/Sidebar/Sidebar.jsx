@@ -23,7 +23,7 @@ const Sidebar = () => {
     try {
       const response = await axios({
         method: "get",
-        url: FetchUser,
+        url: FetchUser.getUser,
         headers: {
           Authorization: cookies.token,
         },

@@ -18,9 +18,10 @@ const SpecificPublic = () => {
           category: categoryName,
         },
       });
-      if (response.status === 200) return setUserList(response.data.publicList);
+      if (response.status === 200)
+        return setPublicList(response.data.publicList);
     } catch (error) {
-      console.log("Specific List Error:", e, e.response);
+      console.log("Specific List Error:", error, error.response);
     }
   };
 
@@ -33,7 +34,7 @@ const SpecificPublic = () => {
       <div className="container">
         <div className="d-flex justify-content-between">
           <p className="display-4 fw-bold text-center">
-            Public List <span className="fs-5"> &gt;</span> {categoryName} List
+            Public List <span className="fs-5"> &gt; {categoryName} List</span>
           </p>
         </div>
 

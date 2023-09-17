@@ -49,9 +49,9 @@ exports.AddList = async (req, res, next) => {
       const { collections: list } = await User.findOne({
         _id: user_id,
       }).populate("collections");
-      return res.json({ success: true, msg: "List Added Successfully", list });
-    } else return res.json({ success: false, error: "No user Found" });
-  } else return res.json({ success: false, error: "User Id not provided" });
+      return res.status(201).json({ msg: "List Added Successfully", list });
+    } else return res.status(404).json({ error: "No user Found" });
+  } else return res.status(400).json({ error: "User Id not provided" });
 };
 
 exports.RemoveList = async (req, res, next) => {
@@ -93,15 +93,19 @@ exports.RemoveList = async (req, res, next) => {
             _id: user_id,
           }).populate("collections");
 
-          return res.json({
-            success: true,
+          return res.status(200).json({
             msg: "List Removed Successfully",
             list,
           });
         }
-      } else return res.json({ success: false, error: "No List Found" });
-    } else return res.json({ success: false, error: "No user Found" });
-  } else return res.json({ success: false, error: "User Id not provided" });
+      } else
+        return res.status(404).json({ success: false, error: "No List Found" });
+    } else
+      return res.status(404).json({ success: false, error: "No user Found" });
+  } else
+    return res
+      .status(400)
+      .json({ success: false, error: "User Id not provided" });
 };
 
 exports.UpdateList = async (req, res, next) => {

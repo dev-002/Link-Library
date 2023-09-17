@@ -25,7 +25,7 @@ const AddUserList = () => {
     try {
       const response = await axios({
         method: "get",
-        url: FetchUser,
+        url: FetchUser.getUser,
         headers: {
           Authorization: cookies.token,
         },
@@ -50,7 +50,8 @@ const AddUserList = () => {
 
   // Handle True/False Option Change
   const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value); // Update the selected option when a radio button is clicked
+    console.log(e.target.value);
+    setSelectedOption(e.target.value === "true" ? true : false); // Update the selected option when a radio button is clicked
   };
 
   // Handle New Category Checked

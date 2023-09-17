@@ -14,6 +14,9 @@ const UserList = {
 };
 const PublicList = baseURL + "/public/list";
 
-const FetchUser = baseURL + "/user";
+const FetchUser = {
+  getUser: baseURL + "/user",
+  getDashboard: baseURL + "/user/dashboard",
+};
 
 export { Auth, UserList, PublicList, FetchUser };

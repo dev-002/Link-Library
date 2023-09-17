@@ -6,7 +6,7 @@ const UserGet = (cookies) => {
     let id;
     axios({
       method: "get",
-      url: FetchUser,
+      url: FetchUser.getUser,
       headers: {
         Authorization: cookies.token,
       },

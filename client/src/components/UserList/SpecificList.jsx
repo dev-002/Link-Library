@@ -23,7 +23,7 @@ const SpecificList = () => {
       });
       if (response.status === 200) return setUserList(response.data.list);
     } catch (error) {
-      console.log("Specific List Error:", e, e.response);
+      console.log("Specific List Error:", error, error.response);
     }
   };
 
@@ -35,7 +35,10 @@ const SpecificList = () => {
     <>
       <div className="container">
         <div className="d-flex justify-content-between">
-          <p className="display-4 fw-bold text-center">{categoryName} List</p>
+          <p className="display-4 fw-bold text-center">
+            User List
+            <span className="fs-5"> &gt; {categoryName} List</span>
+          </p>
           <button
             className="btn border-4 border-black"
             style={{ height: "2.5em", width: "5em" }}
