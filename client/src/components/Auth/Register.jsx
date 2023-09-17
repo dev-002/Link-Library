@@ -1,19 +1,18 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import axios from "axios";
-import Register from "./Register";
 import { Auth } from "../../../API";
 
-const Login = () => {
+const Register = ({ setRegister }) => {
   const navigate = useNavigate();
-  const [cookies, setCookies] = useCookies(["token"]);
 
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
   });
-  const [register, setRegister] = useState(false);
+  const [cookies, setCookies] = useCookies(["token"]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,10 +23,11 @@ const Login = () => {
     try {
       const response = await axios({
         method: "post",
-        url: Auth.login,
+        url: Auth.register,
         data: formData,
       });
-      if (response.status === 200) {
+      console.log("Logged In:", response);
+      if (response.status === 201) {
         setCookies("token", response.data.token);
         navigate("/home");
       }
@@ -36,9 +36,8 @@ const Login = () => {
     }
   };
 
-  if (register) return <Register setRegister={setRegister} />;
-  else
-    return (
+  return (
+    <>
       <div className="container">
         {/* <!-- Section: Design Block --> */}
         <section className="text-center">
@@ -66,11 +65,25 @@ const Login = () => {
             <div className="card-body py-5 px-md-5">
               <div className="row d-flex justify-content-center">
                 <div className="col-lg-8">
-                  <p className="fw-bold fs-1 mb-5">Login now</p>
+                  <p className="fw-bold fs-1 mb-5">Create an Account</p>
 
                   <form onSubmit={(e) => handleSubmit(e)}>
-                    {/* <!-- Email input --> */}
+                    {/*UserName */}
+                    <div className="form-outline mb-4 d-flex justify-content-between">
+                      <label htmlFor="name" className="form-label">
+                        Username:
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        value={formData.name}
+                        className="form-control w-75 border-1 border-black"
+                        onChange={(e) => handleChange(e)}
+                      />
+                    </div>
 
+                    {/* <!-- Email input --> */}
                     <div className="form-outline mb-4 d-flex justify-content-between">
                       <label htmlFor="email" className="form-label">
                         Email:
@@ -111,14 +124,14 @@ const Login = () => {
                     {/* <!-- Login Button --> */}
                     <div className="text-center h5">
                       <p>
-                        New to Link-Library?{" "}
+                        Have an Account?{" "}
                         <a
                           href="#"
-                          onClick={() => setRegister(true)}
+                          onClick={() => setRegister(false)}
                           className="text-primary"
                           style={{ textDecoration: "none" }}
                         >
-                          Create an account
+                          Login
                         </a>
                       </p>
                     </div>
@@ -129,7 +142,8 @@ const Login = () => {
           </div>
         </section>
       </div>
-    );
+    </>
+  );
 };
 
-export default Login;
+export default Register;

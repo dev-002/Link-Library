@@ -1,5 +1,4 @@
 const List = require("../models/list");
-const User = require("../models/user");
 
 exports.PublicListController = async (req, res, next) => {
   const publicList = await List.find({ shared: true });
@@ -11,7 +10,7 @@ exports.PublicListController = async (req, res, next) => {
       : null
   );
 
-  return res.json({
+  return res.status(200).json({
     success: true,
     msg: "Public List Fetched Successfully",
     publicCategories,

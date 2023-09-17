@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import AppRoutes from "./AppRoutes";
 import Login from "./components/Auth/Login";
-import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar/Sidebar";
 
 function App() {
   const [cookies] = useCookies(["token"]);
@@ -13,22 +13,7 @@ function App() {
     else setAuth(false);
   });
 
-  return (
-    <>
-      <Navbar />
-      <div key="app">
-        {!auth ? (
-          <div key="login">
-            <Login />
-          </div>
-        ) : (
-          <div key="routes">
-            <AppRoutes />
-          </div>
-        )}
-      </div>
-    </>
-  );
+  return <>{!auth ? <Login /> : <AppRoutes />}</>;
 }
 
 export default App;

@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const List = require("../models/list");
 
@@ -9,9 +10,15 @@ exports.GetList = async (req, res, next) => {
     //  Check if user is valid
     if (user) {
       const { collections: list } = user;
-      return res.json({ success: true, msg: "All list fetched", list });
-    } else return res.json({ success: false, error: "No user Found" });
-  } else return res.json({ success: false, error: "User Id not provided" });
+      return res
+        .status(200)
+        .json({ success: true, msg: "All list fetched", list });
+    } else
+      return res.status(400).json({ success: false, error: "No user Found" });
+  } else
+    return res
+      .status(400)
+      .json({ success: false, error: "User Id not provided" });
 };
 
 exports.AddList = async (req, res, next) => {
@@ -134,9 +141,12 @@ exports.UpdateList = async (req, res, next) => {
 };
 
 exports.GetCategoryList = async (req, res, next) => {
-  const { user_id } = req.body;
-  const queryCategory = req.params.category;
+  const bearerToekn = req.headers.authorization;
+  const token = bearerToekn?.split(" ")[1];
+  const user_id = jwt.verify(token, process.env.TOKEN_SECRET)?.id;
+  const queryCategory = req.query.category;
   // Check if user_id provided
+  // res.json({ ok: "ok" });
   if (user_id) {
     const user = await User.findOne({ _id: user_id }).populate("collections");
     //  Check if user is valid
@@ -146,16 +156,20 @@ exports.GetCategoryList = async (req, res, next) => {
         // Fetch specific categories data list
         const list = await List.find({ user_id, category: queryCategory });
 
-        return res.json({
+        return res.status(200).json({
           success: true,
           msg: `Category Fetched Successfully: ${queryCategory}`,
           list,
         });
       } else
-        return res.json({
+        return res.status(404).json({
           success: false,
           error: "No such category exist",
         });
-    } else return res.json({ success: false, error: "No user Found" });
-  } else return res.json({ success: false, error: "User Id not provided" });
+    } else
+      return res.status(404).json({ success: false, error: "No user Found" });
+  } else
+    return res
+      .status(400)
+      .json({ success: false, error: "User Id not provided" });
 };

@@ -14,8 +14,8 @@ exports.LoginController = async (req, res, next) => {
         // Creating a token
         const token = jwt.sign(
           { id: user._id, name: user.name },
-          process.env.TOKEN_SECRET,
-          { expiresIn: "10m" }
+          process.env.TOKEN_SECRET
+          // { expiresIn: "10m" }
         );
         return res.json({
           success: true,
@@ -43,17 +43,17 @@ exports.RegisterController = async (req, res, next) => {
     // Creating a token
     const token = jwt.sign(
       { id: user._id, name: user.name },
-      process.env.TOKEN_SECRET,
-      { expiresIn: "10m" }
+      process.env.TOKEN_SECRET
+      // { expiresIn: "10m" }
     );
-    return res.json({
+    return res.status(201).json({
       success: true,
       msg: "User Successfully Register",
       user,
       token: "bearer " + token,
     });
   } catch (err) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       error: "Error occured during registration",
       err,
