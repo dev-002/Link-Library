@@ -96,6 +96,9 @@ const AddUserList = () => {
     <>
       <div className="dashboard container mb-5 vh-100">
         <div className="nav-items fs-4 pb-3">
+          <span className="fs-1 fw-bold mx-3" onClick={() => navigate("/link")}>
+            <i class="fa fa-arrow-left"></i>
+          </span>
           <span className="d-none text-sm text-dark fs-1 d-sm-inline h5">
             Add List
           </span>

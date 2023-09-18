@@ -65,6 +65,18 @@ const Login = () => {
           >
             <div className="card-body py-5 px-md-5">
               <div className="row d-flex justify-content-center">
+                <div
+                  className="position-absolute"
+                  style={{
+                    left: "-40%",
+                  }}
+                  onClick={() => navigate("/")}
+                >
+                  <i
+                    className="fa fa-home me-3 p-2 rounded fs-2"
+                    style={{ color: "#000000" }}
+                  ></i>
+                </div>
                 <div className="col-lg-8">
                   <p className="fw-bold fs-1 mb-5">Login now</p>
 

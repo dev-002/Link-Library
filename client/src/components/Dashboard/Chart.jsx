@@ -33,10 +33,10 @@ const ChartComp = ({ chartData }) => {
           ],
         },
       });
+      return () => {
+        chart.destroy();
+      };
     }
-    return () => {
-      chart.destroy();
-    };
   }, []);
 
   return <canvas id="CategoriesData"></canvas>;

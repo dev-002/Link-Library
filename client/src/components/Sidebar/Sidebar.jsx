@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { Outlet } from "react-router-dom";
 import { Navbar, Container, Nav } from "react-bootstrap";
@@ -7,12 +7,24 @@ import axios from "axios";
 import { FetchUser } from "../../../API";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   const [cookies, setCookies, removeCookies] = useCookies(["token"]);
+  const [auth, setAuth] = useState(false);
 
   const [user, setUser] = useState();
+  const [activeBar, setActiveBar] = useState("home");
 
   const toggleSelect = (e) => {
-    console.log(e);
+    // if (activeBar) {
+    //   activeBar.classList.remove("activeBar");
+    // }
+
+    // // Add the "active" class to the clicked <li> element
+    // e.currentTarget.classList.add("activeBar");
+
+    // // Update the activeBar state to the current <li> element
+    // setActiveBar(e.currentTarget.id);
+    console.log(e.target);
   };
 
   const handleLogout = () => {
@@ -20,25 +32,30 @@ const Sidebar = () => {
   };
 
   const fetchUser = async () => {
-    try {
-      const response = await axios({
-        method: "get",
-        url: FetchUser.getUser,
-        headers: {
-          Authorization: cookies.token,
-        },
-      });
-      if (response.status === 200) {
-        setUser(response.data.user);
+    if (auth) {
+      try {
+        const response = await axios({
+          method: "get",
+          url: FetchUser.getUser,
+          headers: {
+            Authorization: cookies.token,
+          },
+        });
+        if (response.status === 200) {
+          setUser(response.data.user);
+        }
+      } catch (error) {
+        console.log("Fetching User:", error, error.response);
       }
-    } catch (error) {
-      console.log("Fetching User:", error, error.response);
     }
   };
 
   useEffect(() => {
-    fetchUser();
+    if (cookies.token) setAuth(true);
   }, []);
+  useEffect(() => {
+    fetchUser();
+  }, [auth]);
 
   return (
     <>
@@ -58,8 +75,13 @@ const Sidebar = () => {
                 <Nav className="me-auto">
                   <Nav.Link href="/">Home</Nav.Link>
                   <Nav.Link href="/about">About Us</Nav.Link>
-                  <Nav.Link href="/dashboard">Dashboard</Nav.Link>
-                  <Nav.Link href="/link">User Library</Nav.Link>
+                  {auth && (
+                    <>
+                      {" "}
+                      <Nav.Link href="/dashboard">Dashboard</Nav.Link>
+                      <Nav.Link href="/link">User Library</Nav.Link>
+                    </>
+                  )}
                   <Nav.Link href="/public">Public Library</Nav.Link>
 
                   <Nav.Link onClick={() => handleLogout()}>Logout</Nav.Link>
@@ -91,8 +113,8 @@ const Sidebar = () => {
                 {/* Home */}
                 <li
                   className="nav-item text-light fs-4 p-1"
-                  id="dashboard"
-                  onClick={() => toggleSelect()}
+                  id="home"
+                  onClick={(e) => toggleSelect(e)}
                 >
                   <Link
                     to="/"
@@ -109,53 +131,57 @@ const Sidebar = () => {
                   </Link>
                 </li>
 
-                {/* Dashboard */}
-                <li
-                  className="nav-item text-light fs-4 p-1"
-                  id="dashboard"
-                  onClick={() => toggleSelect()}
-                >
-                  <Link
-                    to="/dashboard"
-                    className="nav-link text-light"
-                    area-current="page"
-                  >
-                    <span className="ms-2 d-none d-sm-inline h5 text-light">
-                      <i
-                        className="fa-solid fa-tachometer me-3 bg-light p-2 rounded"
-                        style={{ color: "#000000" }}
-                      ></i>
-                      Dashboard
-                    </span>
-                  </Link>
-                </li>
+                {auth && (
+                  <>
+                    {/* Dashboard */}
+                    <li
+                      className="nav-item text-light fs-4 p-1"
+                      id="dashboard"
+                      onClick={(e) => toggleSelect(e)}
+                    >
+                      <Link
+                        to="/dashboard"
+                        className="nav-link text-light"
+                        area-current="page"
+                      >
+                        <span className="ms-2 d-none d-sm-inline h5 text-light">
+                          <i
+                            className="fa-solid fa-tachometer me-3 bg-light p-2 rounded"
+                            style={{ color: "#000000" }}
+                          ></i>
+                          Dashboard
+                        </span>
+                      </Link>
+                    </li>
 
-                {/* User Library */}
-                <li
-                  className="nav-item text-light fs-4 p-1"
-                  id="userLibrary"
-                  onClick={() => toggleSelect()}
-                >
-                  <Link
-                    to="/link"
-                    className="nav-link text-light"
-                    area-current="page"
-                  >
-                    <span className="ms-2 d-none d-sm-inline h5 text-light">
-                      <i
-                        className="fa-solid fa-user me-3 bg-light p-2 rounded"
-                        style={{ color: "#000000" }}
-                      ></i>
-                      User Library
-                    </span>
-                  </Link>
-                </li>
+                    {/* User Library */}
+                    <li
+                      className="nav-item text-light fs-4 p-1"
+                      id="userLibrary"
+                      onClick={(e) => toggleSelect(e)}
+                    >
+                      <Link
+                        to="/link"
+                        className="nav-link text-light"
+                        area-current="page"
+                      >
+                        <span className="ms-2 d-none d-sm-inline h5 text-light">
+                          <i
+                            className="fa-solid fa-user me-3 bg-light p-2 rounded"
+                            style={{ color: "#000000" }}
+                          ></i>
+                          User Library
+                        </span>
+                      </Link>
+                    </li>
+                  </>
+                )}
 
                 {/* Public Library */}
                 <li
                   className="nav-item text-light fs-4 p-1"
                   id="publicLibrary"
-                  onClick={() => toggleSelect()}
+                  onClick={(e) => toggleSelect(e)}
                 >
                   <Link
                     to="/public"
@@ -177,7 +203,7 @@ const Sidebar = () => {
                 <li
                   className="nav-item text-light fs-4 p-1"
                   id="aboutUs"
-                  onClick={() => toggleSelect()}
+                  onClick={(e) => toggleSelect(e)}
                 >
                   <Link
                     to="/about"
@@ -198,23 +224,41 @@ const Sidebar = () => {
                   </Link>
                 </li>
 
-                {/* <ul className="col-md-6 nav flex-row flex-row-reverse pe-5 "> */}
-                <li className="d-none d-sm-block nav-items text-light fs-4 pt-5 pb-3 ps-5 ">
-                  <button
-                    type="button"
-                    className="btn btn-dark btn-lg border-2 px-5"
-                    style={{
-                      border: "black solid ",
-                      borderColor: "white",
-                    }}
-                    onClick={() => handleLogout()}
-                  >
-                    <p className="h5 " style={{ color: "white" }}>
-                      Logout
-                    </p>
-                  </button>
-                </li>
-                {/* </ul> */}
+                {auth && (
+                  <li className="d-none d-sm-block nav-items text-light fs-4 pt-5 pb-3 ps-5 ">
+                    <button
+                      type="button"
+                      className="btn btn-dark btn-lg border-2 px-5"
+                      style={{
+                        border: "black solid ",
+                        borderColor: "white",
+                      }}
+                      onClick={() => handleLogout()}
+                    >
+                      <p className="h5 " style={{ color: "white" }}>
+                        Logout
+                      </p>
+                    </button>
+                  </li>
+                )}
+
+                {!auth && (
+                  <li className="d-none d-sm-block nav-items text-light fs-4 pt-5 pb-3 ps-5 ">
+                    <button
+                      type="button"
+                      className="btn btn-dark btn-lg border-2 px-5"
+                      style={{
+                        border: "black solid ",
+                        borderColor: "white",
+                      }}
+                      onClick={() => navigate("/login")}
+                    >
+                      <p className="h5 " style={{ color: "white" }}>
+                        Signin
+                      </p>
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
           </div>

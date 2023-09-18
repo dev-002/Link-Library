@@ -25,6 +25,7 @@ const AppRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/public" element={<PublicList />} />
           <Route path="/public/:categoryName" element={<SpecificPublic />} />
+          {/* Protected Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/link" element={<UserList />} />
           <Route path="/link/createList" element={<AddUserList />} />

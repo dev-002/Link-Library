@@ -1,19 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
+import React from "react";
 import AppRoutes from "./AppRoutes";
-import Login from "./components/Auth/Login";
-import Sidebar from "./components/Sidebar/Sidebar";
+import "./Styles/SideBar_Active.css";
 
 function App() {
-  const [cookies] = useCookies(["token"]);
-  const [auth, setAuth] = useState(false);
-
-  useEffect(() => {
-    if (cookies.token) setAuth(true);
-    else setAuth(false);
-  });
-
-  return <>{!auth ? <Login /> : <AppRoutes />}</>;
+  return <AppRoutes />;
 }
 
 export default App;

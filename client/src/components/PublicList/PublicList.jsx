@@ -56,7 +56,7 @@ const PublicListCategory = () => {
               ))
             ) : (
               <>
-                <div className="text-center"> No List Created </div>
+                <div className="text-center"> No Public List Available </div>
               </>
             )}
           </div>
