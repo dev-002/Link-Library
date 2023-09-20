@@ -3,6 +3,7 @@ import { useCookies } from "react-cookie";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { UserList } from "../../../API";
+import { UserGet } from "../../tempUtility";
 
 const SpecificList = () => {
   const navigate = useNavigate();
@@ -28,6 +29,31 @@ const SpecificList = () => {
     }
   };
 
+  // Delete Function
+  const handleDelete = async (el) => {
+    try {
+      const user_id = await UserGet(cookies);
+      const response = await axios({
+        method: "delete",
+        url: UserList.deleteList,
+        headers: {
+          Authorization: cookies.token,
+        },
+        data: { user_id, link_id: el._id },
+      });
+      if (response.status === 200) {
+        setUserList(response.data.list);
+      }
+    } catch (error) {
+      console.log(error, error.response);
+    }
+  };
+
+  // Edit Function
+  const handleEdit = async (el) => {
+    navigate(`/link/${el.category}/edit`, { state: el });
+  };
+
   useEffect(() => {
     fetchList();
   }, []);
@@ -41,7 +67,7 @@ const SpecificList = () => {
               className="fs-1 fw-bold mx-3"
               onClick={() => navigate("/link")}
             >
-              <i class="fa fa-arrow-left"></i>
+              <i className="fa fa-arrow-left"></i>
             </div>
             <p className="display-4 fw-bold text-center">
               User List
@@ -58,30 +84,49 @@ const SpecificList = () => {
         </div>
         <div className="categoryList my-4">
           <div className="row">
-            {userList && userList?.length > 0 ? (
-              userList.map((el) => (
-                <div className="col-lg-4 col-12" key={el.name}>
-                  <div className="card">
-                    <div className="card-body">
-                      <h5 className="card-title">{el.name.toUpperCase()}</h5>
-                      <h6 className="card-subtitle mb-2 text-body-secondary d-flex justify-content-between">
-                        <span>category: {el.category}</span>
-                        <span className="position-absolute end-0 top-0 m-3 fs-4">
-                          {el.shared ? (
-                            <i class="fa-solid fa-lock-open"></i>
-                          ) : (
-                            <i class="fa-solid fa-lock"></i>
-                          )}
-                        </span>
-                      </h6>
-                      <p className="card-text">{el.description}</p>
-                      <a href={el.link} className="card-link">
-                        {el.link}
-                      </a>
+            {userList ? (
+              <>
+                {userList && userList?.length > 0 ? (
+                  userList.map((el) => (
+                    <div className="col-lg-4 col-12" key={el.name}>
+                      <div className="card">
+                        <div className="card-body">
+                          <h5 className="card-title">
+                            {el.name.toUpperCase()}
+                          </h5>
+                          <h6 className="card-subtitle mb-2 text-body-secondary d-flex justify-content-between">
+                            <span>category: {el.category}</span>
+                            <span className="position-absolute end-0 top-0 m-3 fs-4">
+                              {el.shared ? (
+                                <i className="fa-solid fa-lock-open"></i>
+                              ) : (
+                                <i className="fa-solid fa-lock"></i>
+                              )}
+                              <i
+                                className="ms-3 fa-solid fa-trash"
+                                style={{ color: "#d90d0d" }}
+                                onClick={() => handleDelete(el)}
+                              ></i>
+                              <i
+                                className="ms-3 fa-solid fa-pen-to-square"
+                                onClick={() => handleEdit(el)}
+                              ></i>
+                            </span>
+                          </h6>
+                          <p className="card-text">{el.description}</p>
+                          <a href={el.link} className="card-link">
+                            {el.link}
+                          </a>
+                        </div>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="align-items-center d-flex justify-content-center ">
+                    <div className="display-4 fw-normal">No Link Added</div>
                   </div>
-                </div>
-              ))
+                )}
+              </>
             ) : (
               <div className="align-items-center d-flex justify-content-center vh-100">
                 <div className="spinner-border" role="status">

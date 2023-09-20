@@ -11,6 +11,7 @@ const UserList = {
   deleteList: baseURL + "/list/remove",
   updateList: baseURL + "/list/update",
   specificCategoryList: baseURL + "/list",
+  deleteCollection: baseURL + "/list/collection/delete",
 };
 const PublicList = baseURL + "/public/list";
 

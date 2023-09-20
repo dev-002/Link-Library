@@ -13,6 +13,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import UserList from "./components/UserList/UserList";
 import AddUserList from "./components/UserList/AddUserList";
 import SpecificList from "./components/UserList/SpecificList";
+import EditUserList from "./components/UserList/EditUserList";
 
 const AppRoutes = () => {
   return (
@@ -30,6 +31,7 @@ const AppRoutes = () => {
           <Route path="/link" element={<UserList />} />
           <Route path="/link/createList" element={<AddUserList />} />
           <Route path="/link/:categoryName" element={<SpecificList />} />
+          <Route path="/link/:category/edit" element={<EditUserList />} />
         </Route>
       </Routes>
     </>

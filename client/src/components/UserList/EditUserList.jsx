@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FetchUser, UserList } from "../../../API";
 import { useCookies } from "react-cookie";
+import { UserGet } from "../../tempUtility";
 
-const AddUserList = () => {
+const EditUserList = () => {
+  const prevState = useLocation().state;
   const [cookies] = useCookies(["token"]);
   const navigate = useNavigate();
 
   // UserList Data State
   const [userList, setUserList] = useState({
-    name: "",
-    link: "",
-    description: "",
-    category: "",
+    name: prevState.name,
+    link: prevState.link,
+    description: prevState.description,
+    category: prevState.category,
   });
 
-  const [userID, setUserID] = useState(null);
+  // const [userID, setUserID] = useState(null);
   const [category, setCategory] = useState([]);
   const [selectedOption, setSelectedOption] = useState(false);
   const [checkedCategory, setCheckedCategory] = useState(false);
@@ -31,7 +33,7 @@ const AddUserList = () => {
         },
       });
       if (response.status === 200) {
-        setUserID(response.data.user._id);
+        // setUserID(response.data.user._id);
         setCategory(response.data.user.categories);
       }
     } catch (error) {
@@ -64,24 +66,28 @@ const AddUserList = () => {
 
     // Send request to the API
     try {
+      const user_id = await UserGet(cookies);
+      // console.log({
+      //   user_id,
+      //   updatedList: { ...userList, shared: selectedOption },
+      // });
       const response = await axios({
-        method: "post",
-        url: UserList.createList,
+        method: "put",
+        url: UserList.updateList,
         headers: {
           Authorization: cookies.token,
         },
-        data: { ...userList, user_id: userID, shared: selectedOption },
+        data: {
+          user_id,
+          updated_List: {
+            _id: prevState._id,
+            ...userList,
+            shared: selectedOption,
+          },
+        },
       });
 
-      // Set the values to default and navigate to the Manage Puzzle
-      setUserList({
-        ...userList,
-        name: "",
-        link: "",
-        description: "",
-        category: "",
-      });
-      if (response.status === 201) return navigate("/link");
+      if (response.status === 200) return navigate(`/link`);
     } catch (e) {
       console.log(e, e.response);
     }
@@ -286,4 +292,4 @@ const AddUserList = () => {
   );
 };
 
-export default AddUserList;
+export default EditUserList;

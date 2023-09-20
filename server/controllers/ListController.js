@@ -67,20 +67,16 @@ exports.RemoveList = async (req, res, next) => {
         const deleted = await List.deleteOne({ _id: link_id });
         // Check if no error Occured and DeletedCount is 1
         if (deleted.acknowledged) {
-          // Function to check if only 1 list had category or more
-          // if only 1 had that category then remove that category
-
-          // Check if any other list has same category under same user_id
-          const remainingDocuments = await List.find({
+          // if no list have that category then remove that category
+          const listCategoryArray = await List.find({
             category: link.category,
             user_id,
           });
-          // if present then pull that from that user categories list
-          if (remainingDocuments.length === 0)
-            await User.updateOne(
-              { _id: user_id },
-              { $pull: { categories: link.category } }
-            );
+          if (listCategoryArray.length === 0) {
+            await User.findByIdAndUpdate(user_id, {
+              $pull: { categories: link.category },
+            });
+          }
 
           // Function to remove the deleted list from the user collections
           user.collections = user.collections.filter(({ _id }) => {
@@ -118,6 +114,11 @@ exports.UpdateList = async (req, res, next) => {
       const link = await List.findOne({ _id: updated_List._id });
       // Check if link list is valid
       if (link) {
+        // Category Updation
+        if (!user.categories.includes(updated_List.category)) {
+          user.categories.push(updated_List.category);
+          await user.save();
+        }
         // Updation
         const update = await List.updateOne(
           { _id: link._id },
@@ -135,13 +136,18 @@ exports.UpdateList = async (req, res, next) => {
             list,
           });
         } else
-          return res.json({
+          return res.status(400).json({
             success: false,
             error: "Error occured during updation",
           });
-      } else return res.json({ success: false, error: "No List Found" });
-    } else return res.json({ success: false, error: "No user Found" });
-  } else return res.json({ success: false, error: "User Id not provided" });
+      } else
+        return res.status(404).json({ success: false, error: "No List Found" });
+    } else
+      return res.status(404).json({ success: false, error: "No user Found" });
+  } else
+    return res
+      .status(400)
+      .json({ success: false, error: "User Id not provided" });
 };
 
 exports.GetCategoryList = async (req, res, next) => {
@@ -176,4 +182,43 @@ exports.GetCategoryList = async (req, res, next) => {
     return res
       .status(400)
       .json({ success: false, error: "User Id not provided" });
+};
+
+exports.RemoveCollection = async (req, res, next) => {
+  const { user_id, category } = req.body;
+  // Check if user_id provided
+  if (user_id) {
+    const user = await User.findOne({ _id: user_id }).populate("collections");
+    //  Check if user is valid
+    if (user) {
+      if (user.categories.includes(category)) {
+        // Remove the Category from the User Categories
+        await User.findByIdAndUpdate(user_id, {
+          $pull: { categories: category },
+        });
+
+        // For Each Link delete from user collecions and delete from List Model
+        const list = await List.find({ category });
+        list.forEach(async (el) => {
+          await List.findByIdAndDelete(el._id);
+
+          // Function to remove the deleted list from the user collections
+          user.collections = user.collections.filter(({ _id }) => {
+            return !_id.equals(el._id);
+          });
+          await user.save();
+        });
+
+        // Fetch newly updated data
+        const newUser = await User.findOne({
+          _id: user_id,
+        }).populate("collections");
+
+        return res.status(200).json({
+          msg: "List Removed Successfully",
+          list: newUser.categories,
+        });
+      } else return res.status(400).json({ error: "Category Not Found" });
+    } else return res.status(404).json({ error: "No user Found" });
+  } else return res.status(400).json({ error: "User Id not provided" });
 };
