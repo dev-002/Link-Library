@@ -29,6 +29,7 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     removeCookies("token");
+    navigate("/login");
   };
 
   const fetchUser = async () => {
