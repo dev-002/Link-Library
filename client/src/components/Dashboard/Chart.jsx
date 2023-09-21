@@ -31,6 +31,14 @@ const ChartComp = ({ chartData }) => {
               hoverOffset: 4,
             },
           ],
+          options: {
+            plugins: {
+              legend: {
+                display: false,
+                // position: "left",
+              },
+            },
+          },
         },
       });
       return () => {

@@ -52,25 +52,34 @@ const Dashboard = () => {
         <div className="display-6">Dashboard</div>
         {data ? (
           <>
-            <div className="row mt-5 mx-auto justify-content-evenly p-3 fs-bold fs-lg-2 fs-4">
+            <div className="row d-flex mt-5 mx-auto justify-content-evenly p-3 fs-bold fs-lg-2 fs-4">
+              {/* Total Collections */}
               <div
-                className="col-lg-5 p-5 border border-2 border-black"
-                style={{ minHeight: "5em" }}
+                className="col-12 col-sm-5 card border mx-2 shadow-lg p-5 mb-5 d-sm-block"
+                style={{ borderRadius: "20px" }}
               >
                 Total Collections :{" "}
                 <span className="mx-4 fs-lg-1 fs-3">
                   {data.categories.length}
                 </span>
               </div>
-              <div className="col-lg-5 p-5 border border-2 border-black">
+              {/* Total Links */}
+              <div
+                className="col-12 col-sm-5 card border mx-2 shadow-lg p-5 mb-5 d-sm-block"
+                style={{ borderRadius: "20px" }}
+              >
                 Total Links:{" "}
                 <span className="mx-4 fs-lg-1 fs-3">{data.links.length}</span>
               </div>
             </div>
 
-            {/* Chart */}
-            <div className="mt-5 row justify-content-end">
-              <div className="col-5 text-justify fs-2 fw-bold">
+            {/* Chart Div */}
+            <div
+              className="mt-5 row justify-content-end"
+              style={{ minHeight: "20em" }}
+            >
+              {/* Category List */}
+              <div className="col-12 col-sm-7 text-justify fs-2 fw-bold">
                 Categories:
                 <br />
                 {data.categories?.length > 0 ? (
@@ -80,10 +89,18 @@ const Dashboard = () => {
                     </p>
                   ))
                 ) : (
-                  <p>No Stash Created</p>
+                  <p>No Collection Created</p>
                 )}
               </div>
-              <div className="col-6">
+
+              {/* Chart */}
+              <div
+                className="col-4 card border shadow-lg p-3 mb-5 d-none d-sm-block mx-auto"
+                style={{
+                  borderRadius: "20px",
+                  maxHeight: "15em",
+                }}
+              >
                 {chartData && <Chart chartData={chartData} />}
               </div>
             </div>

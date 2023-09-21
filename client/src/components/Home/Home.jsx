@@ -75,17 +75,21 @@ const Home = () => {
           <div className="row">
             {features.map((el) => (
               <div
-                className="card col-lg-3 col-6 m-lg-5 mx-auto"
+                className="card col-lg-3 col-6 m-lg-5 mx-auto py-3 h-auto"
                 key={el.title}
               >
-                <img
+                {/* <img
+                  className="bg-danger card-img-top"
+                  style={{ minHeight: "20%" }}
+                /> */}
+                {/* <img
                   src="https://imgs.search.brave.com/jPHHl5wIw-zUcSg6OKOjgn9X_xj3q6bP0P-k91f4dcQ/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9jZG4y/Lmljb25maW5kZXIu/Y29tL2RhdGEvaWNv/bnMvc2VvLWFuZC13/ZWJzaXRlLzEwMC9T/RU9fc2VjdXJpdHlf/ZmVhdHVyZV93ZWJz/aXRlLTUxMi5wbmc"
                   className="card-img-top"
                   alt="Features Card"
                   style={{
                     maxHeight: "25vh",
                   }}
-                />
+                /> */}
                 <div className="card-body">
                   <h5 className="card-title text-center fs-lg-4 fs-6 fw-bold my-4">
                     {el.title}
