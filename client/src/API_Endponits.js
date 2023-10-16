@@ -11,7 +11,9 @@ const Auth = {
 
 const User = {};
 
-const PublicCollections = {};
+const PublicCollections = {
+  getCollections: baseURL + "/public/list",
+};
 
 const PrivateCollections = {};
 
