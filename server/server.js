@@ -26,7 +26,7 @@ const UserRoute = require("./routes/UserRoute");
 const { VerifyRoute } = require("./utilities/verifyRoute");
 
 app.use("/auth", AuthRoute);
-app.use("/list", VerifyRoute, ListRoute);
+app.use("/private", VerifyRoute, ListRoute);
 app.use("/public", PublicListRoute);
 app.use("/user", UserRoute);
 

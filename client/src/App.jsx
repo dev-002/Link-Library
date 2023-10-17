@@ -1,18 +1,28 @@
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
-import AppRoutes from "./AppRoutes";
 // Pages
 import LoginPage from "./Pages/Auth/Login";
 import RegisterPage from "./Pages/Auth/Register";
 import HomePage from "./Pages/Home/Home";
+import FeaturesPage from "./Pages/Features/Features";
 import AboutPage from "./Pages/About/About";
 import PublicCollectionsPage from "./Pages/PublicLibrary/PublicLibrary";
+import PublicCollectionListPage from "./Pages/PublicLibrary/PublicCollectionList";
+// Protected Routes
+import DashboardPage from "./Pages/Dashboard/Dashboard";
+import PrivateCollectionsPage from "./Pages/PrivateLibrary/PrivateLibrary";
+import PrivateCollectionListPage from "./Pages/PrivateLibrary/PrivateCollectionList";
+import PrivateListCreatePage from "./Pages/PrivateLibrary/PrivateListCreate";
 // Components
 import Navbar from "./Component/Navbar";
 
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // States
   const [cookie] = useCookies(["token"]);
   const [load, setLoad] = useState(false);
   const [auth, setAuth] = useState(false);
@@ -38,24 +48,50 @@ function App() {
       </div>
     );
   }
+
+  if (
+    auth &&
+    (location.pathname == "/auth/login" ||
+      location.pathname == "/auth/register")
+  ) {
+    navigate("/");
+  }
+
   return (
     <div key="app">
-      {!auth ? (
-        <Routes>
-          <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/register" element={<RegisterPage />} />
-          {/* Public Routes */}
-          <Route path="/" element={<Navbar />}>
-            <Route path="/" element={<HomePage />}></Route>
-            <Route path="/about" element={<AboutPage />}></Route>
-            <Route path="/public" element={<PublicCollectionsPage />}></Route>
-          </Route>
-        </Routes>
-      ) : (
-        <div key="Protected Routes">
-          <AppRoutes />
-        </div>
-      )}
+      <Routes>
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/register" element={<RegisterPage />} />
+        {/* Public Routes */}
+        <Route path="/" element={<Navbar />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/public" element={<PublicCollectionsPage />} />
+          <Route
+            path="/public/:collectionQuery"
+            element={<PublicCollectionListPage />}
+          />
+          {auth && (
+            <>
+              <Route path="/protected/dashboard" element={<DashboardPage />} />
+              <Route
+                path="/protected/private"
+                element={<PrivateCollectionsPage />}
+              />
+              <Route
+                path="/protected/private/:collectionQuery"
+                element={<PrivateCollectionListPage />}
+              />
+              {/* Create Private list route */}
+              <Route
+                path="/protected/private/create"
+                element={<PrivateListCreatePage />}
+              />
+            </>
+          )}
+        </Route>
+      </Routes>
     </div>
   );
 }

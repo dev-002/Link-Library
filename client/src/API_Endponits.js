@@ -13,9 +13,13 @@ const User = {};
 
 const PublicCollections = {
   getCollections: baseURL + "/public/list",
+  getCategoryList: baseURL + "/public/list/category",
 };
 
-const PrivateCollections = {};
+const PrivateCollections = {
+  getCollections: baseURL + "/private/",
+  getCategoryList: baseURL + "/private/",
+};
 
 const Settings = {};
 

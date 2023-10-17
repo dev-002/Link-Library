@@ -17,7 +17,7 @@ exports.LoginController = async (req, res, next) => {
           process.env.TOKEN_SECRET
           // { expiresIn: "10m" }
         );
-        return res.json({
+        return res.status(200).json({
           success: true,
           msg: "User Logged In Successfully",
           user,
@@ -25,12 +25,17 @@ exports.LoginController = async (req, res, next) => {
         });
       }
       // if password incorrect
-      else return res.json({ success: false, error: "Incorrect Credentials" });
+      else
+        return res
+          .status(400)
+          .json({ success: false, error: "Incorrect Credentials" });
     }
     // if user not found
-    else return res.json({ success: false, error: "No User Found" });
+    else
+      return res.status(404).json({ success: false, error: "No User Found" });
     // if no data provided
-  } else return res.json({ success: false, error: "No Data Provided" });
+  } else
+    return res.status(404).json({ success: false, error: "No Data Provided" });
 };
 
 exports.RegisterController = async (req, res, next) => {

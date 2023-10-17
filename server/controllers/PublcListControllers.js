@@ -13,7 +13,17 @@ exports.PublicListController = async (req, res, next) => {
   return res.status(200).json({
     success: true,
     msg: "Public List Fetched Successfully",
-    publicCategories,
-    publicList,
+    categories: publicCategories,
+  });
+};
+
+exports.PublicCategoryController = async (req, res, next) => {
+  const categoryQuery = req.query.collectionQuery;
+  const publicList = await List.find({ shared: true, category: categoryQuery });
+
+  return res.status(200).json({
+    success: true,
+    msg: "Public List Fetched Successfully",
+    list: publicList,
   });
 };

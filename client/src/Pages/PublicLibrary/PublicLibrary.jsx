@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { PublicCollections } from "../../API_Endponits";
+import { Link } from "react-router-dom";
 
 const PublicLibrary = () => {
+  const [fetchState, setFetchState] = useState({
+    loading: false,
+    error: "",
+    fetch: false,
+  });
   const [collections, setCollections] = useState([]);
 
   const fetchCollections = async () => {
     try {
+      setFetchState({ ...fetchState, loading: true });
       const response = await axios({
         method: "get",
         url: PublicCollections.getCollections,
       });
       if (response.status === 200) {
-        setCollections(response.data.publicCategories);
+        setFetchState({ ...fetchState, loading: false, fetch: true });
+        setCollections(response.data.categories);
       }
     } catch (error) {
+      setFetchState({ ...fetchState, loading: false, error: error.message });
       console.log("Error: ", {
         location: "in fetching public collections",
         message: error.message,
@@ -38,18 +47,24 @@ const PublicLibrary = () => {
 
         {/* Public Collections */}
         <section>
-          {collections.length !== 0 ? (
-            collections.map((collection) => (
-              <>
-                <div
-                  className="card fs-5 p-3"
+          {!fetchState.loading ? (
+            fetchState.fetch ? (
+              collections.map((collection) => (
+                <Link
                   key={collection}
-                  style={{ backgroundColor: "rgba(255,12,41,0.8)" }}
+                  to={`/public/${collection}`}
+                  className="col-md-4 col-12 fs-5 p-3 btn btn-primary"
                 >
                   {collection.toUpperCase()}
-                </div>
-              </>
-            ))
+                </Link>
+              ))
+            ) : (
+              <div>
+                <p className="fs-4 fw-bold">Error: </p>
+                <p className="fs-5">{fetchState.error}</p>
+                <p className="fs-5 my-4">Please Refresh</p>
+              </div>
+            )
           ) : (
             <> Loading... </>
           )}

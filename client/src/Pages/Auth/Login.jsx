@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import Icon from "./Sub-Component/Icon";
+import axios from "axios";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import Icon from "./Sub-Component/Icon";
 import { Auth } from "../../API_Endponits";
 
 const Login = () => {
+  const [cookie, setCookie] = useCookies(["token"]);
   const navigate = useNavigate();
   const [user, setUser] = useState({ usernameoremail: "", password: "" });
 
@@ -17,9 +20,12 @@ const Login = () => {
       const response = await axios({
         method: "post",
         url: Auth.login,
-        data: user,
+        data: { email: user.usernameoremail, password: user.password },
       });
-      if (response.data === 200) navigate("/");
+      if (response.status === 200) {
+        setCookie("token", response.data.token);
+        navigate("/");
+      }
     } catch (error) {
       console.log("Error: " + error.message);
     }
@@ -42,8 +48,8 @@ const Login = () => {
               {/* Side Text */}
               <div className="col-lg-6 mb-5 mb-lg-0">
                 <h1 className="my-5 display-3 fw-bold ls-tight">
-                  The best offer <br />
-                  <span className="text-primary">for your business</span>
+                  The best way <br />
+                  <span className="text-primary">to Organize Online</span>
                 </h1>
                 <p style={{ color: "hsl(217, 10%, 50.8%)" }}>
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -55,26 +61,11 @@ const Login = () => {
 
               {/* Form */}
               <div className="col-lg-6 mb-5 mb-lg-0">
-                <div className="card" style={{ maxWidth: "70%" }}>
-                  <div className="card-body py-5 px-md-5">
+                <div className="card">
+                  <div className="card-body py-5 mx-auto">
                     <form>
-                      <div className="row">
-                        {/* Username */}
-                        {/* <div className="form-outline mb-4 col-md-10">
-                          <input
-                            type="text"
-                            name="username"
-                            id="username"
-                            className="form-control"
-                          />
-                          <label className="form-label" htmlFor="username">
-                            Username
-                          </label>
-  </div> */}
-                      </div>
-
                       {/* <!-- Email input --> */}
-                      <div className="form-outline mb-4 col-md-10">
+                      <div className="form-outline mb-4">
                         <input
                           type="text"
                           name="usernameoremail"
@@ -89,7 +80,7 @@ const Login = () => {
                       </div>
 
                       {/* <!-- Password input --> */}
-                      <div className="form-outline mb-4 col-md-10">
+                      <div className="form-outline mb-4">
                         <input
                           type="password"
                           name="password"
@@ -106,8 +97,8 @@ const Login = () => {
                       {/* <!-- Submit button --> */}
                       <div className="mb-4">
                         <button
-                          className="btn btn-primary btn-block fs-5"
-                          style={{ minWidth: "90%" }}
+                          className="btn btn-primary btn-block fs-5 mx-auto"
+                          style={{ minWidth: "100%" }}
                           onClick={(e) => handleSubmit(e)}
                           disabled={
                             user.password === "" || user.usernameoremail === ""
@@ -117,7 +108,7 @@ const Login = () => {
                         </button>
                       </div>
 
-                      <div className="mb-4 col-md-10 text-center">
+                      <div className="mb-4 col-md-10 text-center fs-5">
                         Don't have an account?{" "}
                         <a href="/auth/register">Register</a>
                       </div>

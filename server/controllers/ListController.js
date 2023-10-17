@@ -3,18 +3,19 @@ const User = require("../models/user");
 const List = require("../models/list");
 
 exports.GetList = async (req, res, next) => {
-  const { user_id } = req.body;
+  const user_id = res.locals.tokenData.id;
   // Check if user_id provided
   if (user_id) {
     const user = await User.findOne({ _id: user_id }).populate("collections");
     //  Check if user is valid
     if (user) {
-      const { collections: list } = user;
-      return res
-        .status(200)
-        .json({ success: true, msg: "All list fetched", list });
+      return res.status(200).json({
+        success: true,
+        msg: "All list fetched",
+        privateCollections: user.categories,
+      });
     } else
-      return res.status(400).json({ success: false, error: "No user Found" });
+      return res.status(404).json({ success: false, error: "No user Found" });
   } else
     return res
       .status(400)
@@ -151,12 +152,12 @@ exports.UpdateList = async (req, res, next) => {
 };
 
 exports.GetCategoryList = async (req, res, next) => {
-  const bearerToekn = req.headers.authorization;
-  const token = bearerToekn?.split(" ")[1];
-  const user_id = jwt.verify(token, process.env.TOKEN_SECRET)?.id;
-  const queryCategory = req.query.category;
+  const user_id = res.locals.tokenData.id;
+  // const bearerToekn = req.headers.authorization;
+  // const token = bearerToekn?.split(" ")[1];
+  // const user_id = jwt.verify(token, process.env.TOKEN_SECRET)?.id;
+  const queryCategory = req.query.collectionQuery;
   // Check if user_id provided
-  // res.json({ ok: "ok" });
   if (user_id) {
     const user = await User.findOne({ _id: user_id }).populate("collections");
     //  Check if user is valid

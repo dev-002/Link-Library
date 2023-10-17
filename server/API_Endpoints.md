@@ -12,10 +12,8 @@ List of all the api endpoints for easy access for development and testing purpos
 
 ## User Management
 
-- **GET /api/users** - Get a list of all users -Implement
-- **GET /api/users/:id** - Get user by ID -Implement
-- **PUT /api/users/:id** - Update user by ID -Implement
-- **DELETE /api/users/:id** - Delete user by ID -Implement
+- **GET /user** - Get a list of user data
+- **GET /user/dashboard** - Get user dashboard data
 
 ## Link Management
 
@@ -27,10 +25,20 @@ List of all the api endpoints for easy access for development and testing purpos
 
 ## Collections
 
+### Private Collections
+
+- **GET /private/** - Get a list of users all collection
+- **GET /api/collections/:id** - Get collection by ID -Implement
+- **POST /api/collections** - Create a new collection -Implement
+- **PUT /api/collections/:id** - Update collection by ID -Implement
+- **DELETE /api/collections/:id** - Delete collection by ID -Implement
+
+### Public Collections
+
 - **GET /api/collections** - Get a list of all collections -Implement
 - **GET /api/collections/:id** - Get collection by ID -Implement
 - **POST /api/collections** - Create a new collection -Implement
 - **PUT /api/collections/:id** - Update collection by ID -Implement
 - **DELETE /api/collections/:id** - Delete collection by ID -Implement
 
-...
+## Admin Panel

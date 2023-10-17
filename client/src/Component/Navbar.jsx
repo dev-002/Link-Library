@@ -1,11 +1,17 @@
 import React from "react";
 import { useCookies } from "react-cookie";
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import Footer from "./Footer";
 
 const Navbar = () => {
-  const [cookie] = useCookies(["token"]);
+  const navigate = useNavigate();
+  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+
+  const handleLogout = (e) => {
+    removeCookie("token");
+    navigate("/");
+  };
 
   return (
     <>
@@ -28,76 +34,80 @@ const Navbar = () => {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="/">
+                {/* <a className="nav-link active" aria-current="page" href="/"> */}
+                <NavLink to="/" className="nav-link">
                   Home
-                </a>
+                </NavLink>
+                {/* </a> */}
               </li>
               {/* Protected Routes */}
               {cookie.token && (
                 <>
                   <li className="nav-item">
-                    <a
-                      className="nav-link disabled"
-                      href="/protected/dashboard"
-                      aria-disabled="true"
-                    >
+                    <NavLink to="/protected/dashboard" className="nav-link">
                       Dashboard
-                    </a>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <a
-                      className="nav-link disabled"
-                      href="/protected/collections"
-                      aria-disabled="true"
-                    >
+                    <NavLink to="/protected/private" className="nav-link">
                       Private Collections
-                    </a>
+                    </NavLink>
                   </li>
                 </>
               )}
               <li className="nav-item">
-                <a className="nav-link" href="/public">
+                <NavLink to="/public" className="nav-link">
                   Public Collections
-                </a>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/about">
+                <NavLink to="/about" className="nav-link">
                   About us
-                </a>
+                </NavLink>
               </li>
             </ul>
             <div className="d-flex me-4" role="Auth">
-              <li className="navbar-nav nav-item dropdown">
-                <button
-                  className="nav-link dropdown-toggle btn"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Auth
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <a
-                      className="dropdown-item mx-2 fw-bold"
-                      href="/auth/login"
-                    >
-                      Loign
-                    </a>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <a
-                      className="dropdown-item mx-2 fw-bold"
-                      href="/auth/regiter"
-                    >
-                      Register
-                    </a>
-                  </li>
-                </ul>
-              </li>
+              {cookie.token ? (
+                <div className="fw-bold">
+                  <i className="fa-solid fa-user me-2"></i> Admin
+                  <i
+                    className="fa-solid fa-arrow-right-from-bracket ms-5"
+                    onClick={(e) => handleLogout(e)}
+                  ></i>
+                </div>
+              ) : (
+                <li className="navbar-nav nav-item dropdown">
+                  <button
+                    className="nav-link dropdown-toggle btn"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Auth
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <NavLink
+                        to="/auth/login"
+                        className="dropdown-item mx-2 fw-bold"
+                      >
+                        Login
+                      </NavLink>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/auth/regiter"
+                        className="dropdown-item mx-2 fw-bold"
+                      >
+                        Register
+                      </NavLink>
+                    </li>
+                  </ul>
+                </li>
+              )}
             </div>
           </div>
         </div>
