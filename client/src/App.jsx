@@ -10,6 +10,7 @@ import FeaturesPage from "./Pages/Features/Features";
 import AboutPage from "./Pages/About/About";
 import PublicCollectionsPage from "./Pages/PublicLibrary/PublicLibrary";
 import PublicCollectionListPage from "./Pages/PublicLibrary/PublicCollectionList";
+import Error from "./Pages/Error/Error";
 // Protected Routes
 import DashboardPage from "./Pages/Dashboard/Dashboard";
 import PrivateCollectionsPage from "./Pages/PrivateLibrary/PrivateLibrary";
@@ -72,6 +73,7 @@ function App() {
             path="/public/:collectionQuery"
             element={<PublicCollectionListPage />}
           />
+          <Route path="/error" element={<Error />} />
           {auth && (
             <>
               <Route path="/protected/dashboard" element={<DashboardPage />} />

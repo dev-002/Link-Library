@@ -31,11 +31,13 @@ const PublicCollectionList = () => {
       }
     } catch (error) {
       setFetchState({ ...fetchState, loading: false, error: error.message });
-      console.log("Error: ", {
-        location: "in fetching User Private collections",
+      const state = {
+        code: error.code,
+        title: error.name,
+        location: "in fetching Public Collection List",
         message: error.message,
-        error,
-      });
+      };
+      navigate("/error", { state });
     }
   };
 

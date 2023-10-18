@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const PrivateLibrary = () => {
   const navigate = useNavigate();
-  const [cookie, setCookie] = useCookies(["token"]);
+  const [cookie] = useCookies(["token"]);
 
   // States
   const [fetchState, setFetchState] = useState({
@@ -17,6 +17,7 @@ const PrivateLibrary = () => {
   const [collections, setCollections] = useState([]);
 
   const fetchCollections = async () => {
+    let status;
     try {
       setFetchState({ ...fetchState, loading: true });
       const response = await axios({
@@ -27,14 +28,19 @@ const PrivateLibrary = () => {
       if (response.status === 200) {
         setFetchState({ ...fetchState, loading: false, fetch: true });
         setCollections(response.data.privateCollections);
+        status = response.status;
       }
     } catch (error) {
       setFetchState({ ...fetchState, loading: false, error: error.message });
-      console.log("Error: ", {
+      console.log(error);
+      const state = {
+        code: error.code,
+        title: error.name,
+        status,
         location: "in fetching User Private collections",
         message: error.message,
-        error,
-      });
+      };
+      navigate("/error", { state });
     }
   };
 

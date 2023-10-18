@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { PublicCollections } from "../../API_Endponits";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const PublicLibrary = () => {
+  const navigate = useNavigate();
   const [fetchState, setFetchState] = useState({
     loading: false,
     error: "",
@@ -24,11 +25,13 @@ const PublicLibrary = () => {
       }
     } catch (error) {
       setFetchState({ ...fetchState, loading: false, error: error.message });
-      console.log("Error: ", {
+      const state = {
+        code: error.code,
+        title: error.name,
         location: "in fetching public collections",
         message: error.message,
-        error,
-      });
+      };
+      navigate("/error", { state });
     }
   };
   useEffect(() => {

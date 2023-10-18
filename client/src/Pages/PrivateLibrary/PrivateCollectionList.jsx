@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { PrivateCollections } from "../../API_Endponits";
 import { useCookies } from "react-cookie";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const PrivateCollectionList = () => {
-  const [cookie, setCookie] = useCookies(["token"]);
+  const navigate = useNavigate();
+  const [cookie] = useCookies(["token"]);
   const collectionQuery = useParams().collectionQuery;
 
   // States
@@ -18,6 +19,7 @@ const PrivateCollectionList = () => {
 
   const fetchCollections = async () => {
     try {
+      let status;
       setFetchState({ ...fetchState, loading: true });
 
       const response = await axios({
@@ -32,14 +34,18 @@ const PrivateCollectionList = () => {
       if (response.status === 200) {
         setFetchState({ ...fetchState, loading: false, fetch: true });
         setCollections(response.data.list);
+        status = response.status;
       }
     } catch (error) {
       setFetchState({ ...fetchState, loading: false, error: error.message });
-      console.log("Error: ", {
+      const state = {
+        code: error.code,
+        title: error.name,
+        status,
         location: "in fetching User Private collections",
         message: error.message,
-        error,
-      });
+      };
+      navigate("/error", { state });
     }
   };
 
