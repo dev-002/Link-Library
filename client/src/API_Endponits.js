@@ -21,6 +21,9 @@ const PrivateCollections = {
   getCategoryList: baseURL + "/private/",
 };
 
-const Settings = {};
+const Settings = {
+  application: baseURL + "/setting/application",
+  theme: baseURL + "/setting/theme",
+};
 
 export { Auth, User, PublicCollections, PrivateCollections, Settings };
