@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 module.exports.VerifyRoute = async (req, res, next) => {
-  const bearerToekn = req.headers.authorization;
-  const token = bearerToekn?.split(" ")[1];
-  const data = jwt.verify(token, process.env.TOKEN_SECRET);
+  // const bearerToekn = req.headers.authorization;
+  // const token = bearerToekn?.split(" ")[1];
+  const token = req.cookies.auth_token;
+  const data = jwt.verify(token, process.env.JWT_SECRET);
   try {
     if (data) {
       res.locals.tokenData = data;
