@@ -1,11 +1,11 @@
 const express = require("express");
-const {
-  PublicListController,
-  PublicCategoryController,
-} = require("../controllers/PublcListControllers");
 const router = express.Router();
+const {
+  publicListController,
+  publicCollectionController,
+} = require("../controllers/PublcListControllers");
 
-router.get("/list", PublicListController);
-router.get("/list/category", PublicCategoryController);
+router.get("/list", publicCollectionController);
+router.get("/list/:collectionName", publicListController);
 
 module.exports = router;
