@@ -4,8 +4,31 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import Icon from "./Sub-Component/Icon";
 import { Auth } from "../../API_Endponits";
+import RegisterComp from "./RegisterComp";
 
-const Login = () => {
+export default function Login() {
+  const navigate = useNavigate();
+  const [registerOpen, setRegisterOpen] = useState(false);
+
+  return (
+    <>
+      <div
+        className="absolute top-5 left-6 text-2xl cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        <i className="fa-solid fa-house" />
+      </div>
+
+      {registerOpen ? (
+        <RegisterComp setRegisterOpen={setRegisterOpen} />
+      ) : (
+        <LoginComp setRegisterOpen={setRegisterOpen} />
+      )}
+    </>
+  );
+}
+
+const LoginComp = ({ setRegisterOpen }) => {
   const [cookie, setCookie] = useCookies(["token"]);
   const navigate = useNavigate();
   const [user, setUser] = useState({ usernameoremail: "", password: "" });
@@ -36,22 +59,16 @@ const Login = () => {
       {/* <!-- Section: Design Block --> */}
       <section>
         {/* <!-- Jumbotron --> */}
-        <div
-          className="px-4 py-5 px-md-5 text-center text-lg-start"
-          style={{ backgroundColor: "hsl(0, 0%, 96%)", minHeight: "100vh" }}
-        >
+        <div className="px-4 py-5 md:px-5 text-center text-lg-start min-h-screen bg-[hsl(0, 0%, 96%)]">
           <div className="container">
-            <div
-              className="row gx-lg-5 align-items-center"
-              style={{ padding: "10% 0" }}
-            >
+            <div className="flex lg:mx-5 items-center py-[10%]">
               {/* Side Text */}
-              <div className="col-lg-6 mb-5 mb-lg-0">
-                <h1 className="my-5 display-3 fw-bold ls-tight">
+              <div className="lg:w-1/2 mb-5 lg:mb-0">
+                <h1 className="my-5 text-lg font-bold ls-tight">
                   The best way <br />
                   <span className="text-primary">to Organize Online</span>
                 </h1>
-                <p style={{ color: "hsl(217, 10%, 50.8%)" }}>
+                <p className="text-[hsl(217, 10%, 50.8%)]">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
                   Eveniet, itaque accusantium odio, soluta, corrupti aliquam
                   quibusdam tempora at cupiditate quis eum maiores libero
@@ -60,7 +77,7 @@ const Login = () => {
               </div>
 
               {/* Form */}
-              <div className="col-lg-6 mb-5 mb-lg-0">
+              <div className="lg:w-fit mx-auto mb-5 lg:mb-0 border-2 border-secondary2 p-5">
                 <div className="card">
                   <div className="card-body py-5 mx-auto">
                     <form>
@@ -72,11 +89,9 @@ const Login = () => {
                           id="usernameoremail"
                           value={user.usernameoremail}
                           onChange={(e) => handleChange(e)}
-                          className="form-control"
+                          className="p-1 block border-b-2 border-black"
+                          placeholder="Username or Email"
                         />
-                        <label className="form-label" htmlFor="usernameoremail">
-                          Username or Email
-                        </label>
                       </div>
 
                       {/* <!-- Password input --> */}
@@ -87,17 +102,15 @@ const Login = () => {
                           id="password"
                           value={user.password}
                           onChange={(e) => handleChange(e)}
-                          className="form-control"
+                          className="p-1 block border-b-2 border-black"
+                          placeholder="Password"
                         />
-                        <label className="form-label" htmlFor="password">
-                          Password
-                        </label>
                       </div>
 
                       {/* <!-- Submit button --> */}
                       <div className="mb-4">
                         <button
-                          className="btn btn-primary btn-block fs-5 mx-auto"
+                          className="p-2 rounded bg-primary text-white text-lg mx-auto cursor-pointer"
                           style={{ minWidth: "100%" }}
                           onClick={(e) => handleSubmit(e)}
                           disabled={
@@ -108,13 +121,18 @@ const Login = () => {
                         </button>
                       </div>
 
-                      <div className="mb-4 col-md-10 text-center fs-5">
+                      <div className="mb-4 md:w-10/12 mx-auto text-lg">
                         Don't have an account?{" "}
-                        <a href="/auth/register">Register</a>
+                        <span
+                          className="text-blue-400 cursor-pointer"
+                          onClick={() => setRegisterOpen(true)}
+                        >
+                          Register
+                        </span>
                       </div>
 
                       {/* <!-- Register Button Icons--> */}
-                      <div className="text-center fs-md-4">
+                      <div className="text-center md:text-lg">
                         <p>
                           or <b>Login</b> with:
                         </p>
@@ -134,5 +152,3 @@ const Login = () => {
     </>
   );
 };
-
-export default Login;

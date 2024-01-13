@@ -1,8 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
-const Features = () => {
-  const navigate = useNavigate();
+export default function FeatureSection() {
   const data = [
     {
       title: "Link Collection Creation:",
@@ -81,28 +79,29 @@ const Features = () => {
   return (
     <>
       <div className="container">
-        <section className="fs-2 fw-bold my-4">
+        {/* <section className="fs-2 fw-bold my-4">
           <i
             className="fa-solid fa-arrow-left me-2"
             onClick={() => navigate("/")}
           ></i>{" "}
           More Featuers
-        </section>
+        </section> */}
 
         {/* Feature Card */}
         <section>
-          <div className="row">
+          <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
             {data.map((obj) => (
               <div
-                className="col-md-4 my-3"
+                className="my-3 p-4 border border-black rounded min-h-fit"
                 key={obj.title}
-                style={{ minHeight: "fit-content" }}
               >
                 <div className="card">
                   <div className="card-body">
-                    <h5 className="card-title fw-bold">{obj.title}</h5>
+                    <h5 className="card-title font-bold overflow-clip">
+                      {obj.title}
+                    </h5>
                     <hr />
-                    <p className="card-text">
+                    <p className="card-text md:inline hidden">
                       {obj.body.map((line, index) => (
                         <span key={index}>
                           {line}
@@ -118,7 +117,7 @@ const Features = () => {
         </section>
 
         {/* More About the Featueres */}
-        <section className="my-5">
+        {/* <section className="my-5">
           <strong className="fs-3">
             Analysis of Collections on Dashboard:
           </strong>
@@ -179,10 +178,8 @@ const Features = () => {
               inspiration.
             </li>
           </ul>
-        </section>
+        </section> */}
       </div>
     </>
   );
-};
-
-export default Features;
+}

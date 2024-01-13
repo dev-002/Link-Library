@@ -5,7 +5,7 @@ const NotFound = () => {
     <img
       src="./resources/Error_NotFound.jpg"
       alt="Vector Image"
-      style={{ maxWidth: "90%" }}
+      className="max-w-[90%]"
     />
   );
 };
@@ -15,7 +15,7 @@ const ServerError = () => {
     <img
       src="./resources/Error_Server.jpg"
       alt="Vector Image"
-      style={{ maxWidth: "90%" }}
+      className="max-w-[90%]"
     />
   );
 };
@@ -25,7 +25,7 @@ const ClientError = () => {
     <img
       src="./resources/Error_BadRequest.jpg"
       alt="Vector Image"
-      style={{ maxWidth: "90%" }}
+      className="max-w-[90%]"
     />
   );
 };

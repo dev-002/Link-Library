@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { PrivateCollections } from "../../API_Endponits";
+import { PrivateCollections as collectionLink } from "../../API_Endponits";
 import { useCookies } from "react-cookie";
 import { Link, useNavigate } from "react-router-dom";
 
-const PrivateLibrary = () => {
+export default function PrivateCollection() {
   const navigate = useNavigate();
   const [cookie] = useCookies(["token"]);
 
@@ -22,7 +22,7 @@ const PrivateLibrary = () => {
       setFetchState({ ...fetchState, loading: true });
       const response = await axios({
         method: "get",
-        url: PrivateCollections.getCollections,
+        url: collectionLink.getCollections,
         headers: { Authorization: cookie.token },
       });
       if (response.status === 200) {
@@ -50,38 +50,38 @@ const PrivateLibrary = () => {
 
   return (
     <>
-      <div className="container" style={{ minHeight: "60vh" }}>
+      <div className="container min-h-fit">
         {/* Heading */}
-        <section className="row d-flex justify-content-between my-5">
-          <div className="col-8 fs-2 fw-bold">
+        <section className="flex justify-between my-5">
+          <div className="w-2/3 text-2xl font-bold">
             PrivateLibrary <i className="fa-solid fa-arrow-right"></i>
           </div>
-          <div className="col-2 fs-1">
+          <div className="w-1/12 text-lg">
             <i
               className="fa-solid fa-square-plus"
-              onClick={() => navigate("/protected/private/create")}
+              onClick={() => navigate("/private/create")}
             ></i>
           </div>
         </section>
 
-        {/* Public Collections */}
+        {/* Private Collections */}
         <section>
           {!fetchState.loading ? (
             fetchState.fetch ? (
               collections.map((collection) => (
                 <Link
                   key={collection}
-                  className="col-md-4 col-12 fs-5 p-3 btn btn-primary"
-                  to={`/protected/private/${collection}`}
+                  to={`/private/${collection}`}
+                  className="md:w-fit w-full text-xl p-3 border-2 border-secondary2 rounded"
                 >
                   {collection.toUpperCase()}
                 </Link>
               ))
             ) : (
               <div>
-                <p className="fs-4 fw-bold">Error: </p>
-                <p className="fs-5">{fetchState.error}</p>
-                <p className="fs-5 my-4">Please Refresh</p>
+                <p className="text-lg font-bold">Error: </p>
+                <p className="text-xl">{fetchState.error}</p>
+                <p className="text-xl my-4">Please Refresh</p>
               </div>
             )
           ) : (
@@ -91,6 +91,4 @@ const PrivateLibrary = () => {
       </div>
     </>
   );
-};
-
-export default PrivateLibrary;
+}

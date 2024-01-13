@@ -1,5 +1,6 @@
 /*
-This File provides all the api endpoints already setup in the server(for localhost) for the development purpose */
+This File provides all the api endpoints already setup in the server(for localhost) for the development purpose 
+*/
 
 const baseURL = "http://localhost:5000";
 

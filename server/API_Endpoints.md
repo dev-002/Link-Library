@@ -4,7 +4,7 @@ List of all the api endpoints for easy access for development and testing purpos
 
 ## Authentication
 
-- **Base URL http://localhost:5000/api/v1** - Add base url before every route
+- **Base URL http://localhost:5000** - Add base url before every route
 
 - **POST /auth/login** - User login
 - **POST /auth/register** - User registration
@@ -12,27 +12,33 @@ List of all the api endpoints for easy access for development and testing purpos
 
 ## User Management
 
-- **GET /user/** - Get a user basic data
-- **GET /user/dashboard** - Get user data of categories and collections
+- **GET /user** - Get a list of user data
+- **GET /user/dashboard** - Get user dashboard data
+
+## Link Management
+
+- **GET /api/links/:id** - Get link by ID -Implement
+- **GET /list/** - Get a list of all links
+- **POST /list/add** - Create a new link
+- **PUT /list/update** - Update link by ID
+- **DELETE /list/remove** - Delete link by ID
 
 ## Collections
 
 ### Private Collections
 
 - **GET /private/** - Get a list of users all collection
-- **GET /private/:collectionName** - Get collection by collection Name
-- **POST /private/add** - Create a new collection
-- **POST /private/add/list** - Create a new collection link
-- **PUT /private/update** - Update collection
-- **DELETE /private/:collectionName** - Delete collection by collection Name
-- **DELETE /private/remove** - Delete a list of collection
+- **GET /api/collections/:id** - Get collection by ID -Implement
+- **POST /api/collections** - Create a new collection -Implement
+- **PUT /api/collections/:id** - Update collection by ID -Implement
+- **DELETE /api/collections/:id** - Delete collection by ID -Implement
 
 ### Public Collections
 
-- **GET /public/list** - Get a list of all collections category name
-- **GET /public/list/:collectionName** - Get collection list by collection name
+- **GET /api/collections** - Get a list of all collections -Implement
+- **GET /api/collections/:id** - Get collection by ID -Implement
+- **POST /api/collections** - Create a new collection -Implement
+- **PUT /api/collections/:id** - Update collection by ID -Implement
+- **DELETE /api/collections/:id** - Delete collection by ID -Implement
 
 ## Admin Panel
-
-- **POST /admin/login** - Admin login panel
-- **GET /admin/user** - Get the list of all the users

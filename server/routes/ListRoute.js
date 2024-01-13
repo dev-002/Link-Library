@@ -1,23 +1,21 @@
 const express = require("express");
 const {
-  getList,
-  addList,
-  addCollection,
-  removeList,
-  updateList,
-  getSpecificCollection,
-  removeCollection,
+  GetList,
+  AddList,
+  RemoveList,
+  UpdateList,
+  GetCategoryList,
+  RemoveCollection,
 } = require("../controllers/ListController");
 const router = express.Router();
 
-router.get("/", getList);
-router.post("/add", addCollection);
-router.post("/add/list", addList);
-router.delete("/remove", removeList);
-router.put("/update", updateList);
+router.get("/", GetList);
+router.post("/add", AddList);
+router.delete("/remove", RemoveList);
+router.put("/update", UpdateList);
+router.delete("/collection/delete", RemoveCollection);
 
-// request for a particular Category List
-router.delete("/:collectionName", removeCollection);
-router.get("/:collectionName", getSpecificCollection);
+// get request for a particular Category List
+router.post("/", GetCategoryList);
 
 module.exports = router;

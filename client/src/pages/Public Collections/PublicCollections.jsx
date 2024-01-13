@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { PublicCollections } from "../../API_Endponits";
+import { PublicCollections as collectionLink } from "../../API_Endponits";
 import { Link, useNavigate } from "react-router-dom";
 
-const PublicLibrary = () => {
+export default function PublicCollections() {
   const navigate = useNavigate();
   const [fetchState, setFetchState] = useState({
     loading: false,
@@ -17,7 +17,7 @@ const PublicLibrary = () => {
       setFetchState({ ...fetchState, loading: true });
       const response = await axios({
         method: "get",
-        url: PublicCollections.getCollections,
+        url: collectionLink.getCollections,
       });
       if (response.status === 200) {
         setFetchState({ ...fetchState, loading: false, fetch: true });
@@ -40,10 +40,10 @@ const PublicLibrary = () => {
 
   return (
     <>
-      <div className="container" style={{ minHeight: "60vh" }}>
+      <div className="container min-h-fit">
         {/* Heading */}
         <section className="my-5">
-          <div className="fs-2 fw-bold">
+          <div className="text-2xl font-bold">
             PublicLibrary <i className="fa-solid fa-arrow-right"></i>
           </div>
         </section>
@@ -56,16 +56,16 @@ const PublicLibrary = () => {
                 <Link
                   key={collection}
                   to={`/public/${collection}`}
-                  className="col-md-4 col-12 fs-5 p-3 btn btn-primary"
+                  className="md:w-fit w-full text-xl p-3 border-2 border-secondary2 rounded"
                 >
                   {collection.toUpperCase()}
                 </Link>
               ))
             ) : (
               <div>
-                <p className="fs-4 fw-bold">Error: </p>
-                <p className="fs-5">{fetchState.error}</p>
-                <p className="fs-5 my-4">Please Refresh</p>
+                <p className="text-lg font-bold">Error: </p>
+                <p className="text-xl">{fetchState.error}</p>
+                <p className="text-xl my-4">Please Refresh</p>
               </div>
             )
           ) : (
@@ -75,6 +75,4 @@ const PublicLibrary = () => {
       </div>
     </>
   );
-};
-
-export default PublicLibrary;
+}

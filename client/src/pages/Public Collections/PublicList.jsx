@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { PrivateCollections } from "../../API_Endponits";
-import { useCookies } from "react-cookie";
+import { PublicCollections } from "../../API_Endponits";
 import { useNavigate, useParams } from "react-router-dom";
 
-const PrivateCollectionList = () => {
+export default function PublicList() {
   const navigate = useNavigate();
-  const [cookie] = useCookies(["token"]);
   const collectionQuery = useParams().collectionQuery;
-
   // States
   const [fetchState, setFetchState] = useState({
     loading: false,
@@ -19,30 +16,25 @@ const PrivateCollectionList = () => {
 
   const fetchCollections = async () => {
     try {
-      let status;
       setFetchState({ ...fetchState, loading: true });
 
       const response = await axios({
-        method: "post",
-        url: PrivateCollections.getCategoryList,
-        headers: { Authorization: cookie.token },
+        method: "get",
+        url: PublicCollections.getCategoryList,
         params: {
           collectionQuery,
         },
       });
-      console.log("Response", response);
       if (response.status === 200) {
         setFetchState({ ...fetchState, loading: false, fetch: true });
         setCollections(response.data.list);
-        status = response.status;
       }
     } catch (error) {
       setFetchState({ ...fetchState, loading: false, error: error.message });
       const state = {
         code: error.code,
         title: error.name,
-        status,
-        location: "in fetching User Private collections",
+        location: "in fetching Public Collection List",
         message: error.message,
       };
       navigate("/error", { state });
@@ -58,24 +50,30 @@ const PrivateCollectionList = () => {
       <div className="container" style={{ minHeight: "60vh" }}>
         {/* Heading */}
         <section className="my-5">
-          <div className="fs-2 fw-bold">
+          <div className="text-xl font-bold">
+            <i
+              className="fa-solid fa-arrow-left me-2"
+              onClick={() => navigate("/public")}
+            ></i>
             {collectionQuery.toUpperCase()} Collection{" "}
-            <i className="fa-solid fa-arrow-right"></i>
           </div>
         </section>
 
         {/* Public Collections */}
         <section>
-          <div className="row fs-5">
+          <div className="flex text-lg">
             {!fetchState.loading ? (
               fetchState.fetch ? (
                 collections.map((list) => (
-                  <div className="card col-md-4 p-3 m-3" key={list.name}>
-                    <div className="row d-flex mt-2 justify-content-between">
-                      <div className="col-8 card-heading fw-bold text-justify">
+                  <div
+                    className="card md:w-1/3 p-3 m-3 border-2 border-secondary2 rounded-lg"
+                    key={list.name}
+                  >
+                    <div className="flex mt-2 justify-between">
+                      <div className="w-2/3 card-heading font-bold text-justify">
                         {list.name.toUpperCase()}
                       </div>
-                      <div className="col-2">
+                      <div className="w-1/12 text-2xl">
                         {list.shared ? (
                           <i className="fa-regular fa-user"></i>
                         ) : (
@@ -83,29 +81,27 @@ const PrivateCollectionList = () => {
                         )}
                       </div>
                     </div>
-                    <hr />
+                    <hr className="mt-1 mb-3 border-b-2 border-secondary3" />
                     <div className="card-body">
-                      <p className="card-text">{list.description}</p>
-                      <p className="card-link">
+                      <div className="card-text">
+                        <p>
+                          {list.description}
+                          <br />
+                          Owner:
+                          <span className="font-bold mt-2"> Admin</span>
+                        </p>
+                      </div>
+                      <p className="card-link text-blue-500">
                         <a href={list.link}>{list.link}</a>
                       </p>
-                    </div>
-                    <hr />
-                    <div className="card-body row d-flex justify-content-evenly">
-                      <button className="col-5 btn btn-warning m-1">
-                        Edit <i className="fa-solid fa-pen-to-square mx-1"></i>
-                      </button>
-                      <button className="col-5 btn btn-danger m-1">
-                        Delete <i className="fa-solid fa-trash mx-1"></i>
-                      </button>
                     </div>
                   </div>
                 ))
               ) : (
                 <div>
-                  <p className="fs-4 fw-bold">Error: </p>
-                  <p className="fs-5">{fetchState.error}</p>
-                  <p className="fs-5 my-4">Please Refresh</p>
+                  <p className="text-xl font-bold">Error: </p>
+                  <p className="text-lg">{fetchState.error}</p>
+                  <p className="text-lg my-4">Please Refresh</p>
                 </div>
               )
             ) : (
@@ -116,6 +112,4 @@ const PrivateCollectionList = () => {
       </div>
     </>
   );
-};
-
-export default PrivateCollectionList;
+}

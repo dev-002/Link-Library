@@ -1,101 +1,52 @@
-import { useState, useEffect } from "react";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
-// Pages
-import LoginPage from "./Pages/Auth/Login";
-import RegisterPage from "./Pages/Auth/Register";
-import HomePage from "./Pages/Home/Home";
-import FeaturesPage from "./Pages/Features/Features";
-import AboutPage from "./Pages/About/About";
-import PublicCollectionsPage from "./Pages/PublicLibrary/PublicLibrary";
-import PublicCollectionListPage from "./Pages/PublicLibrary/PublicCollectionList";
-import Error from "./Pages/Error/Error";
-// Protected Routes
-import DashboardPage from "./Pages/Dashboard/Dashboard";
-import PrivateCollectionsPage from "./Pages/PrivateLibrary/PrivateLibrary";
-import PrivateCollectionListPage from "./Pages/PrivateLibrary/PrivateCollectionList";
-import PrivateListCreatePage from "./Pages/PrivateLibrary/PrivateListCreate";
-// Components
-import Navbar from "./Component/Navbar";
+import Login from "./pages/Auth/Login";
+import Sidebar from "./components/Sidebar";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import PublicCollections from "./pages/Public Collections/PublicCollections";
+import PubilcList from "./pages/Public Collections/PublicList";
+import PrivateCollections from "./pages/Private Collections/PrivateCollection";
+import PrivateList from "./pages/Private Collections/PrivateList";
+import Profile from "./pages/Profile";
+import Setting from "./pages/Settings";
+import Contact from "./pages/Contact";
+import Error from "./pages/Error";
 
-function App() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // States
-  const [cookie] = useCookies(["token"]);
-  const [load, setLoad] = useState(false);
-  const [auth, setAuth] = useState(false);
-
-  useEffect(() => {
-    setLoad(true);
-    if (!cookie.token) {
-      setAuth(false);
-      setLoad(false);
-    } else {
-      setAuth(true);
-      setLoad(false);
-    }
-  }, [cookie]);
-
-  if (load) {
-    return (
-      <div
-        className="spinner-border"
-        style={{ width: "3rem", height: "3rem", color: "white" }}
-      >
-        <span className="sr-only">Loading...</span>
-      </div>
-    );
-  }
-
-  if (
-    auth &&
-    (location.pathname == "/auth/login" ||
-      location.pathname == "/auth/register")
-  ) {
-    navigate("/");
-  }
+const App = () => {
+  const [auth] = useCookies(["auth_token"]);
 
   return (
-    <div key="app">
-      <Routes>
-        <Route path="/auth/login" element={<LoginPage />} />
-        <Route path="/auth/register" element={<RegisterPage />} />
-        {/* Public Routes */}
-        <Route path="/" element={<Navbar />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/features" element={<FeaturesPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/public" element={<PublicCollectionsPage />} />
-          <Route
-            path="/public/:collectionQuery"
-            element={<PublicCollectionListPage />}
-          />
-          <Route path="/error" element={<Error />} />
-          {auth && (
-            <>
-              <Route path="/protected/dashboard" element={<DashboardPage />} />
-              <Route
-                path="/protected/private"
-                element={<PrivateCollectionsPage />}
-              />
-              <Route
-                path="/protected/private/:collectionQuery"
-                element={<PrivateCollectionListPage />}
-              />
-              {/* Create Private list route */}
-              <Route
-                path="/protected/private/create"
-                element={<PrivateListCreatePage />}
-              />
-            </>
-          )}
-        </Route>
-      </Routes>
-    </div>
+    <>
+      <div className="flex overflow-hidden">
+        <Routes>
+          <Route path="/" element={<Sidebar />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/public" element={<PublicCollections />} />
+            <Route path="/public/:collectionQuery" element={<PubilcList />} />
+            {auth.auth_token && (
+              <>
+                <Route path="/private" element={<PrivateCollections />} />
+                <Route
+                  path="/private/:collectionQuery"
+                  element={<PrivateList />}
+                />
+
+                <Route path="/profile" element={<Profile />} />
+              </>
+            )}
+            <Route path="/setting" element={<Setting />} />
+            <Route path="/contact" element={<Contact />} />
+          </Route>
+          <Route path="/auth" element={<Login />} />
+          <Route path="/*" element={<Error />} />
+        </Routes>
+      </div>
+    </>
   );
-}
+};
 
 export default App;

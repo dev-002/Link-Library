@@ -1,10 +1,9 @@
 const express = require("express");
-const { getUser, getDashboard } = require("../controllers/UserController");
-const { VerifyRoute } = require("../utilities/verifyRoute");
+const UserController = require("../controllers/UserController");
 
 const router = express.Router();
 
-router.get("/", VerifyRoute, getUser);
-router.get("/dashboard", VerifyRoute, getDashboard);
+router.get("/", UserController.getUser);
+router.get("/dashboard", UserController.getDashboard);
 
 module.exports = router;

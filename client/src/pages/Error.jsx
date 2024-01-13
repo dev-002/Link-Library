@@ -5,24 +5,21 @@ import {
   NotFound,
   ServerError,
   ClientError,
-} from "./SubComponents/VectorImage";
+} from "../components/Error/VectorImages";
 
-const Error = ({}) => {
+export default function Error() {
   const { state } = useLocation();
   const error = { ...state, status: 400 };
   console.log(useLocation().state);
 
   return (
     <>
-      <div className="container" style={{ minHeight: "70vh" }}>
+      <div className="container min-h-screen pt-10">
         {/* Main Error Section */}
         <section>
-          <div className="row">
+          <div className="flex flex-col">
             {/* Vector Image */}
-            <div
-              className="d-md-flex d-none col-6 align-self-center"
-              style={{ minHeight: "50vh" }}
-            >
+            <div className="md:flex hidden w-1/2 self-center max-h-96">
               {error.status === 404 ? (
                 <NotFound />
               ) : error.status > 499 ? (
@@ -34,23 +31,23 @@ const Error = ({}) => {
 
             {/* Error Content */}
             <div
-              className="col-md-6 col-10 text-center mx-auto"
+              className="md:w-1/2 w-[80%] text-center mx-auto"
               style={{ padding: "9em 0" }}
             >
-              <p className="display-1 fw-bold">Error: {error.status}</p>
-              <p className="pt-2 fw-bold fs-2">{error.message}</p>
+              <p className="text-2xl font-bold">Error: {error.status}</p>
+              <p className="pt-2 font-bold text-xl">{error.message}</p>
               {/* <div
                 className="text-start"
                 style={{ position: "relative", left: "30%" }}
               > */}
               <p>
-                <span className="fs-4 me-2">Code:</span> {error.code}
+                <span className="text-xl me-2">Code:</span> {error.code}
               </p>
               <p>
-                <span className="fs-4 me-2">Message:</span> {error.message}
+                <span className="text-xl me-2">Message:</span> {error.message}
               </p>
               <p>
-                <span className="fs-4 me-2">Location:</span> {error.location}
+                <span className="text-xl me-2">Location:</span> {error.location}
               </p>
               {/* </div> */}
             </div>
@@ -59,6 +56,4 @@ const Error = ({}) => {
       </div>
     </>
   );
-};
-
-export default Error;
+}

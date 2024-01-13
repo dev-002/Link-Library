@@ -1,13 +1,7 @@
 const mongoose = require("mongoose");
-const { randomUUID } = require("crypto");
 const { Schema } = mongoose;
 
 const listSchema = new Schema({
-  _id: {
-    type: String,
-    default: randomUUID(),
-    required: true,
-  },
   name: {
     type: String,
     required: true,
@@ -19,27 +13,19 @@ const listSchema = new Schema({
   description: {
     type: String,
   },
-});
-
-const collectionSchema = new Schema({
-  name: {
-    type: String,
-  },
-  shared: {
-    type: String,
-    default: "private",
-    // public: Public ,private: Private, shared: Shared
-    required: true,
-  },
   category: {
     type: String,
     required: true,
   },
-  owner: {
+  shared: {
+    type: Boolean,
+    // true - Public false - Private
+    required: true,
+  },
+  user_id: {
     type: Schema.Types.ObjectId,
     ref: "user",
   },
-  list: { type: [listSchema], default: [] },
 });
 
-module.exports = mongoose.model("list", collectionSchema);
+module.exports = mongoose.model("list", listSchema);
