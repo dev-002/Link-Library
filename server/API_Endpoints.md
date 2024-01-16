@@ -4,7 +4,7 @@ List of all the api endpoints for easy access for development and testing purpos
 
 ## Authentication
 
-- **Base URL http://localhost:5000** - Add base url before every route
+- **Base URL http://localhost:5000/api/v1** - Add base url before every route
 
 - **POST /auth/login** - User login
 - **POST /auth/register** - User registration
@@ -27,18 +27,18 @@ List of all the api endpoints for easy access for development and testing purpos
 
 ### Private Collections
 
-- **GET /private/** - Get a list of users all collection
-- **GET /api/collections/:id** - Get collection by ID -Implement
-- **POST /api/collections** - Create a new collection -Implement
-- **PUT /api/collections/:id** - Update collection by ID -Implement
-- **DELETE /api/collections/:id** - Delete collection by ID -Implement
+- **GET /private** - Get a list of users all collection
+- **POST /private/add** - Create a Collection
+- **DELETE /private/:collectionName** - Remove a Collection
+
+- **GET /private/:collectionName** - Get collection by ID
+- **POST /private/add/list** - Create a new Collection List
+- **POST /private/update** - Update collection List
+- **DELETE /private/remove** - Delete collection by ID
 
 ### Public Collections
 
-- **GET /api/collections** - Get a list of all collections -Implement
-- **GET /api/collections/:id** - Get collection by ID -Implement
-- **POST /api/collections** - Create a new collection -Implement
-- **PUT /api/collections/:id** - Update collection by ID -Implement
-- **DELETE /api/collections/:id** - Delete collection by ID -Implement
+- **GET /public/list** - Get a list of all collections -Implement
+- **GET /public/list/:collectionName** - Get collection by ID -Implement
 
 ## Admin Panel

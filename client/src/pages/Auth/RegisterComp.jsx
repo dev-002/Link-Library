@@ -1,30 +1,40 @@
 import React, { useState } from "react";
+import axios from "axios";
 // API
 import { Auth } from "../../API_Endponits";
 // Sub Components
 import Icon from "./Sub-Component/Icon";
 
 export default function RegisterComp({ setRegisterOpen }) {
-  const [user, setUser] = useState({ username: "", email: "", password: "" });
-  const [repeatPassword, setRepeatPassword] = useState("");
+  const [user, setUser] = useState({
+    username: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
+  });
+  const [disabled, setDisabled] = useState(true);
 
   const handleChange = (e) => {
+    if (e.target.name == "repeatPassword") {
+      if (user.password === e.target.value) setDisabled(false);
+      else setDisabled(true);
+    }
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(user);
-    // try {
-    //   const response = await axios({
-    //     method: "post",
-    //     url: Auth.login,
-    //     data: user,
-    //   });
-    //   if (response.status === 200) navigate("/");
-    // } catch (error) {
-    //   console.log("Error: " + error.message);
-    // }
+    try {
+      const response = await axios({
+        method: "post",
+        url: Auth.login,
+        data: user,
+      });
+      if (response.status === 200) navigate("/");
+    } catch (error) {
+      console.log("Error: " + error.message);
+    }
   };
 
   return (
@@ -83,10 +93,10 @@ export default function RegisterComp({ setRegisterOpen }) {
                       <div className="form-outline mb-4 md:w-10/12">
                         <input
                           type="password"
-                          name="password"
+                          name="repeatPassword"
                           id="repeatpassword"
-                          value={repeatPassword}
-                          onChange={(e) => setRepeatPassword(e.target.value)}
+                          value={user.repeatPassword}
+                          onChange={(e) => handleChange(e)}
                           className="form-control border-b-2 border-black"
                           placeholder="Repeat Password"
                         />
@@ -95,9 +105,13 @@ export default function RegisterComp({ setRegisterOpen }) {
                       {/* <!-- Submit button --> */}
                       <div className="mb-4">
                         <button
-                          className="p-2 w-full rounded bg-primary text-white text-lg mx-auto cursor-pointer"
+                          className={`${
+                            disabled
+                              ? "rounded pointer-events-none opacity-50"
+                              : ""
+                          } p-2 w-full rounded bg-primary text-white text-lg mx-auto cursor-pointer`}
                           onClick={(e) => handleSubmit(e)}
-                          disabled={user.password !== repeatPassword}
+                          disabled={disabled}
                         >
                           Register
                         </button>
