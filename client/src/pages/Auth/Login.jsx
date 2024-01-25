@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { Auth } from "../../API_Endponits";
 import RegisterComp from "./RegisterComp";
 
 export default function Login() {
+  const [cookie, setCookie] = useCookies(["token"]);
   const navigate = useNavigate();
   const [registerOpen, setRegisterOpen] = useState(false);
 
@@ -20,20 +21,32 @@ export default function Login() {
       </div>
 
       {registerOpen ? (
-        <RegisterComp setRegisterOpen={setRegisterOpen} />
+        <RegisterComp
+          setRegisterOpen={setRegisterOpen}
+          setCookie={setCookie}
+          navigate={navigate}
+        />
       ) : (
-        <LoginComp setRegisterOpen={setRegisterOpen} />
+        <LoginComp
+          setRegisterOpen={setRegisterOpen}
+          setCookie={setCookie}
+          navigate={navigate}
+        />
       )}
     </>
   );
 }
 
-const LoginComp = ({ setRegisterOpen }) => {
-  const [cookie, setCookie] = useCookies(["token"]);
-  const navigate = useNavigate();
+const LoginComp = ({ setRegisterOpen, setCookie, navigate }) => {
   const [user, setUser] = useState({ usernameoremail: "", password: "" });
+  const [disabled, setDisabled] = useState(true);
+
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
   const handleChange = (e) => {
+    if (emailRef.current == "" || passwordRef.current == "") setDisabled(true);
+    else setDisabled(false);
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
@@ -46,11 +59,16 @@ const LoginComp = ({ setRegisterOpen }) => {
         data: { email: user.usernameoremail, password: user.password },
       });
       if (response.status === 200) {
-        setCookie("token", response.data.token);
+        console.log(response.data);
+        setCookie("auth_token", response.data.token);
         navigate("/");
       }
     } catch (error) {
-      console.log("Error: " + error.message);
+      if (error.response) {
+        let response = error.response.data;
+        console.log("Error: ", response.error);
+        console.log(response.saveError.keyPattern);
+      } else console.log("Error: ", error.message);
     }
   };
 
@@ -84,6 +102,7 @@ const LoginComp = ({ setRegisterOpen }) => {
                       {/* <!-- Email input --> */}
                       <div className="form-outline mb-4">
                         <input
+                          ref={emailRef}
                           type="text"
                           name="usernameoremail"
                           id="usernameoremail"
@@ -97,6 +116,7 @@ const LoginComp = ({ setRegisterOpen }) => {
                       {/* <!-- Password input --> */}
                       <div className="form-outline mb-4">
                         <input
+                          ref={passwordRef}
                           type="password"
                           name="password"
                           id="password"
@@ -110,12 +130,14 @@ const LoginComp = ({ setRegisterOpen }) => {
                       {/* <!-- Submit button --> */}
                       <div className="mb-4">
                         <button
-                          className="p-2 rounded bg-primary text-white text-lg mx-auto cursor-pointer"
+                          className={`${
+                            disabled
+                              ? "rounded pointer-events-none opacity-50"
+                              : ""
+                          } p-2 rounded bg-primary text-white text-lg mx-auto cursor-pointer`}
                           style={{ minWidth: "100%" }}
                           onClick={(e) => handleSubmit(e)}
-                          disabled={
-                            user.password === "" || user.usernameoremail === ""
-                          }
+                          disabled={disabled}
                         >
                           Login
                         </button>

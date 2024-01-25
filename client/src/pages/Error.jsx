@@ -10,16 +10,16 @@ import {
 export default function Error() {
   const { state } = useLocation();
   const error = { ...state, status: 400 };
-  console.log(useLocation().state);
+  console.log(state);
 
   return (
     <>
-      <div className="container min-h-screen pt-10">
+      <div className="container pt-10">
         {/* Main Error Section */}
         <section>
           <div className="flex flex-col">
             {/* Vector Image */}
-            <div className="md:flex hidden w-1/2 self-center max-h-96">
+            <div className="md:flex hidden w-1/2 self-center max-h-screen">
               {error.status === 404 ? (
                 <NotFound />
               ) : error.status > 499 ? (

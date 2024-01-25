@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../utility/axiosInstance";
 import { PrivateCollections as collectionLink } from "../../API_Endponits";
-import { useCookies } from "react-cookie";
 import { Link, useNavigate } from "react-router-dom";
+import CreateCollectionModel from "./subComponents/CreateCollectionModel";
+import UpdateCollectionModal from "./subComponents/UpdateCollectionModal";
 
 export default function PrivateCollection() {
   const navigate = useNavigate();
-  const [cookie] = useCookies(["token"]);
 
   // States
   const [fetchState, setFetchState] = useState({
@@ -15,15 +15,19 @@ export default function PrivateCollection() {
     fetch: false,
   });
   const [collections, setCollections] = useState([]);
+  const [createModel, setCreateModel] = useState(false);
+  const [updateCollectionModal, setUpdateCollectionModal] = useState({
+    status: false,
+    collection: {},
+  });
 
   const fetchCollections = async () => {
     let status;
     try {
       setFetchState({ ...fetchState, loading: true });
-      const response = await axios({
-        method: "get",
-        url: collectionLink.getCollections,
-        headers: { Authorization: cookie.token },
+
+      const response = await axiosInstance.get(collectionLink.getCollections, {
+        withCredentials: true,
       });
       if (response.status === 200) {
         setFetchState({ ...fetchState, loading: false, fetch: true });
@@ -43,10 +47,53 @@ export default function PrivateCollection() {
       navigate("/error", { state });
     }
   };
-
   useEffect(() => {
     fetchCollections();
   }, []);
+
+  return createModel ? (
+    <CreateCollectionModel setCreateModel={setCreateModel} />
+  ) : updateCollectionModal.status ? (
+    <UpdateCollectionModal
+      setUpdateCollectionModal={setUpdateCollectionModal}
+      updateCollectionModal={updateCollectionModal}
+    />
+  ) : (
+    <PrivateCollectionComp
+      setCreateModel={setCreateModel}
+      fetchState={fetchState}
+      collections={collections}
+      setUpdateCollectionModal={setUpdateCollectionModal}
+    />
+  );
+}
+
+const PrivateCollectionComp = ({
+  setCreateModel,
+  fetchState,
+  collections,
+  setUpdateCollectionModal,
+}) => {
+  async function handleDelete(collection) {
+    const api = collectionLink.removeCollection + `/${collection.name}`;
+    try {
+      const response = await axiosInstance.delete(api, null, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200) navigate("/private");
+    } catch (error) {
+      console.log(error);
+      const state = {
+        code: error.code,
+        title: error.name,
+        status,
+        location: "in fetching User Private collections",
+        message: error.message,
+      };
+      navigate("/error", { state });
+    }
+  }
 
   return (
     <>
@@ -56,10 +103,10 @@ export default function PrivateCollection() {
           <div className="w-2/3 text-2xl font-bold">
             PrivateLibrary <i className="fa-solid fa-arrow-right"></i>
           </div>
-          <div className="w-1/12 text-lg">
+          <div className="w-1/12 md:text-3xl text-lg cursor-pointer">
             <i
               className="fa-solid fa-square-plus"
-              onClick={() => navigate("/private/create")}
+              onClick={() => setCreateModel(true)}
             ></i>
           </div>
         </section>
@@ -68,15 +115,67 @@ export default function PrivateCollection() {
         <section>
           {!fetchState.loading ? (
             fetchState.fetch ? (
-              collections.map((collection) => (
-                <Link
-                  key={collection}
-                  to={`/private/${collection}`}
-                  className="md:w-fit w-full text-xl p-3 border-2 border-secondary2 rounded"
-                >
-                  {collection.toUpperCase()}
-                </Link>
-              ))
+              collections.length > 0 ? (
+                collections.map((collection) => (
+                  <div
+                    key={collection.name}
+                    className="box md:w-fit w-full text-xl py-3 border-2 border-secondary2 rounded"
+                  >
+                    <div className="w-full px-3 pb-3 flex justify-between border-b-2 border-black">
+                      <span className="text-xl font-medium">
+                        {collection.name.toUpperCase()}
+                      </span>
+                      <Link
+                        key={collection.name}
+                        to={`/private/${collection.name}`}
+                        className="text-lg"
+                      >
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                      </Link>
+                    </div>
+
+                    <div className="body mt-3 px-2">
+                      <div className="mb-3 text-lg">
+                        {collection.description}
+                      </div>
+
+                      <div className="flex text-sm font-normal text-blue-500">
+                        {collection.tags.map((tag) => (
+                          <span key={tag} className="me-1">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <hr className="mt-1 mb-3 border-b-2 border-secondary3" />
+                      <div className="text-lg flex justify-evenly">
+                        <button
+                          className="m-1 px-2 py-1 bg-blue-500 rounded hover:bg-blue-700 hover:text-white hover:shadow-blue-500/50 shadow-lg"
+                          onClick={() => {
+                            setUpdateCollectionModal({
+                              status: true,
+                              collection,
+                            });
+                          }}
+                        >
+                          Edit{" "}
+                          <i className="fa-solid fa-pen-to-square mx-1"></i>
+                        </button>
+                        <button
+                          className="m-1 px-2 py-1 bg-red-500 rounded hover:bg-red-700 hover:text-white hover:shadow-red-500/50 shadow-lg"
+                          onClick={() => handleDelete(collection)}
+                        >
+                          Delete <i className="fa-solid fa-trash mx-1"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-xl pt-8">
+                  No Private Collection Available
+                </div>
+              )
             ) : (
               <div>
                 <p className="text-lg font-bold">Error: </p>
@@ -91,4 +190,4 @@ export default function PrivateCollection() {
       </div>
     </>
   );
-}
+};

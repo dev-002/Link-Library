@@ -2,9 +2,13 @@
 
 List of all the api endpoints for easy access for development and testing purpose.
 
-## Authentication
-
 - **Base URL http://localhost:5000/api/v1** - Add base url before every route
+
+## Contact
+
+- **POST /contact** - Send contact form
+
+## Authentication
 
 - **POST /auth/login** - User login
 - **POST /auth/register** - User registration
@@ -12,33 +16,44 @@ List of all the api endpoints for easy access for development and testing purpos
 
 ## User Management
 
-- **GET /user** - Get a list of user data
+- **GET /user/username** - Get a logged in username
+- **GET /user** - Get user data
+- **PUT /user** - Update the user details
 - **GET /user/dashboard** - Get user dashboard data
-
-## Link Management
-
-- **GET /api/links/:id** - Get link by ID -Implement
-- **GET /list/** - Get a list of all links
-- **POST /list/add** - Create a new link
-- **PUT /list/update** - Update link by ID
-- **DELETE /list/remove** - Delete link by ID
+- **POST /user/like** - Like a collection
 
 ## Collections
+
+### Public Collections
+
+- **GET /public** - Get a list of all collections
+- **GET /public/:collectionName** - Get collection by collection name
 
 ### Private Collections
 
 - **GET /private** - Get a list of users all collection
-- **POST /private/add** - Create a Collection
+- **POST /private** - Create a Collection
 - **DELETE /private/:collectionName** - Remove a Collection
+- **PUT /private/:collectionName** - Update a Collection
 
-- **GET /private/:collectionName** - Get collection by ID
-- **POST /private/add/list** - Create a new Collection List
-- **POST /private/update** - Update collection List
-- **DELETE /private/remove** - Delete collection by ID
+- **GET /private/:collectionName** - Get collection by collection Name
+- **POST /private/:collectionName/update** - Update collection link
+- **DELETE /private/:collectionName/remove** - Delete collection link
 
-### Public Collections
+### Report Collection
 
-- **GET /public/list** - Get a list of all collections -Implement
-- **GET /public/list/:collectionName** - Get collection by ID -Implement
+- **GET /report/:collectionName** - Report the collection or link
 
 ## Admin Panel
+
+- **GET /admin/user** - Get a list of all users
+- **GET /admin/user/:username** - Get specific user's detail and it's collection
+- **POST /admin/userrole** - Update a user's role
+- **DELETE /admin/banuser** - Ban a user and it's collection
+
+- **GET /admin/contact** - List all the contacts made by all the users
+- **DELETE /admin/contact** - Delete the contact form
+
+- **GET /admin/collection/:collectionName** - Get Specific collection details
+- **DELETE /admin/:collectionName** - Delete a collection or link
+- **GET /admin/reports** - Get list of all the reports

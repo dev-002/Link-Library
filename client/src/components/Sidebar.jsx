@@ -1,11 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, Link } from "react-router-dom";
 import Linkpath from "./Sidebar/Linkpath";
 import { useCookies } from "react-cookie";
+import { User } from "../API_Endponits";
+import axios from "axios";
 
 export default function Sidebar() {
-  const [auth] = useCookies(["auth_token"]);
+  const [cookie, setCookie] = useCookies(["auth_token"]);
   const [open, setOpen] = useState(false);
+  const [username, setUsername] = useState();
+
+  async function fetchUsername() {
+    try {
+      const response = await axios({
+        method: "get",
+        url: User.getUsername,
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setUsername(response.data.username);
+      }
+    } catch (error) {
+      setCookie("auth_token", "");
+      setUsername();
+      if (error.response) {
+        let response = error.response.data;
+        console.log("Error: ", response.message);
+      } else console.log("Error: ", error.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchUsername();
+  }, [cookie]);
+
   return (
     <>
       {/* Hamburger */}
@@ -34,7 +62,7 @@ export default function Sidebar() {
             <ListItem NavLink="/">Home</ListItem>
             <ListItem NavLink="/about">About</ListItem>
             <ListItem NavLink="/public">Public Collection</ListItem>
-            {auth.auth_token && (
+            {cookie.auth_token && (
               <>
                 <ListItem NavLink="/private">Collections</ListItem>
                 <ListItem NavLink="/profile">Profile</ListItem>
@@ -58,7 +86,7 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div className="bg-primary md:flex flex-col w-[25%] h-screen px-4 py-8 overflow-auto border-r hidden">
         <h2 className="text-3xl font-semibold text-center text-secondary">
-          LinkStash
+          {username ? "@" + username : "LinkStash"}
         </h2>
         <div className="flex flex-col justify-between mt-6">
           <aside>
@@ -74,22 +102,22 @@ export default function Sidebar() {
                 icon={<i className="fa-solid fa-address-card"></i>}
               />
               <Linkpath
-                TO={"/publicCollection"}
+                TO={"/public"}
                 name={"Public Collections"}
                 icon={<i className="fa-solid fa-book-open"></i>}
               />
 
-              {auth.auth_token && (
+              {cookie.auth_token && (
                 <>
                   <Linkpath
-                    TO={"/privateCollections"}
+                    TO={"/private"}
                     name={"Private Collections"}
                     icon={<i className="fa-solid fa-book"></i>}
                   />
 
                   <Linkpath
-                    TO={"/profile"}
-                    name={"Profile"}
+                    TO={"/dashboard"}
+                    name={"Dashboard"}
                     icon={<i className="fa-solid fa-user"></i>}
                   />
                 </>
@@ -106,25 +134,29 @@ export default function Sidebar() {
                 name={"Setting"}
                 icon={<i className="fa-solid fa-gear"></i>}
               />
-              <li className="my-3">
-                <Link
-                  to={"/auth"}
-                  type="button"
-                  className="w-full cursor-pointer text-center rounded-md border border-text bg-secondary px-5 py-3 text-xl font-bold text-primary transition hover:bg-opacity-90"
-                >
-                  Sign In
-                </Link>
-              </li>
 
-              <li className="my-3">
-                <Link
-                  to={"/auth"}
-                  type="button"
-                  className="w-full cursor-pointer text-center rounded-md border border-text bg-secondary px-5 py-3 text-xl font-bold text-primary transition hover:bg-opacity-90"
-                >
-                  Log In
-                </Link>
-              </li>
+              {!cookie.auth_token && (
+                <>
+                  <li className="my-3">
+                    <Link
+                      to={"/auth"}
+                      type="button"
+                      className="w-full cursor-pointer text-center rounded-md border border-text bg-secondary px-5 py-3 text-xl font-bold text-primary transition hover:bg-opacity-90"
+                    >
+                      Sign In
+                    </Link>
+                  </li>
+                  <li className="my-3">
+                    <Link
+                      to={"/auth"}
+                      type="button"
+                      className="w-full cursor-pointer text-center rounded-md border border-text bg-secondary px-5 py-3 text-xl font-bold text-primary transition hover:bg-opacity-90"
+                    >
+                      Log In
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </aside>
         </div>

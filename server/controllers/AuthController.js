@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const createToken = require("../utilities/createToken");
 
 exports.LoginController = async (req, res, next) => {
   const { email, password } = req.body;
@@ -11,14 +11,13 @@ exports.LoginController = async (req, res, next) => {
     if (user) {
       // Check if password matches
       if (await bcrypt.compare(password, user.password)) {
-        // Creating a token
-        const token = jwt.sign(
-          { id: user._id, name: user.name },
-          process.env.TOKEN_SECRET
-          // { expiresIn: "10m" }
-        );
+        const token = createToken({
+          _id: user._id,
+          username: user.username,
+          role: user.role,
+        });
+
         return res.status(200).json({
-          success: true,
           msg: "User Logged In Successfully",
           user,
           token: "bearer " + token,
@@ -39,27 +38,37 @@ exports.LoginController = async (req, res, next) => {
 };
 
 exports.RegisterController = async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
   // Hash the password to be stored
   const hashPassword = await bcrypt.hash(password, 10);
   try {
     // Create a new User
-    const user = await User.create({ name, email, password: hashPassword });
+    const user = new User({ username, email, password: hashPassword });
+
+    try {
+      await user.save();
+    } catch (saveError) {
+      console.error("\n\n\nError occurred during save:", saveError);
+      return res.status(500).json({
+        error: `Already Existing value`,
+        saveError,
+      });
+    }
+
     // Creating a token
-    const token = jwt.sign(
-      { id: user._id, name: user.name },
-      process.env.TOKEN_SECRET
-      // { expiresIn: "10m" }
-    );
+    const token = createToken({
+      _id: user._id,
+      username: user.username,
+      role: user.role,
+    });
+
     return res.status(201).json({
-      success: true,
       msg: "User Successfully Register",
       user,
       token: "bearer " + token,
     });
   } catch (err) {
-    return res.status(400).json({
-      success: false,
+    return res.status(500).json({
       error: "Error occured during registration",
       err,
     });

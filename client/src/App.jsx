@@ -10,13 +10,13 @@ import PublicCollections from "./pages/Public Collections/PublicCollections";
 import PubilcList from "./pages/Public Collections/PublicList";
 import PrivateCollections from "./pages/Private Collections/PrivateCollection";
 import PrivateList from "./pages/Private Collections/PrivateList";
-import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
 import Setting from "./pages/Settings";
 import Contact from "./pages/Contact";
 import Error from "./pages/Error";
 
 const App = () => {
-  const [auth] = useCookies(["auth_token"]);
+  const [cookie] = useCookies(["auth_token"]);
 
   return (
     <>
@@ -27,7 +27,7 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/public" element={<PublicCollections />} />
             <Route path="/public/:collectionQuery" element={<PubilcList />} />
-            {auth.auth_token && (
+            {cookie.auth_token && (
               <>
                 <Route path="/private" element={<PrivateCollections />} />
                 <Route
@@ -35,14 +35,14 @@ const App = () => {
                   element={<PrivateList />}
                 />
 
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/dashboard" element={<Dashboard />} />
               </>
             )}
             <Route path="/setting" element={<Setting />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/error/*" element={<Error />} />
           </Route>
           <Route path="/auth" element={<Login />} />
-          <Route path="/*" element={<Error />} />
         </Routes>
       </div>
     </>

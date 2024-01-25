@@ -2,9 +2,16 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  name: {
+  role: {
+    type: String,
+    enum: ["admin", "moderator", "user"],
+    default: "user",
+    required: true,
+  },
+  username: {
     type: String,
     required: true,
+    unique: true,
   },
   email: {
     type: String,
@@ -19,8 +26,8 @@ const userSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "list" }],
     default: [],
   },
-  categories: {
-    type: [String],
+  liked: {
+    type: [{ type: Schema.Types.ObjectId, ref: "list" }],
     default: [],
   },
 });

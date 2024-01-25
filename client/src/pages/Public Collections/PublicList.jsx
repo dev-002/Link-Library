@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { PublicCollections } from "../../API_Endponits";
+import axiosInstance from "../../utility/axiosInstance";
+import { PublicCollections as collectionLink } from "../../API_Endponits";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function PublicList() {
@@ -12,36 +12,32 @@ export default function PublicList() {
     error: "",
     fetch: false,
   });
-  const [collections, setCollections] = useState([]);
-
-  const fetchCollections = async () => {
-    try {
-      setFetchState({ ...fetchState, loading: true });
-
-      const response = await axios({
-        method: "get",
-        url: PublicCollections.getCategoryList,
-        params: {
-          collectionQuery,
-        },
-      });
-      if (response.status === 200) {
-        setFetchState({ ...fetchState, loading: false, fetch: true });
-        setCollections(response.data.list);
-      }
-    } catch (error) {
-      setFetchState({ ...fetchState, loading: false, error: error.message });
-      const state = {
-        code: error.code,
-        title: error.name,
-        location: "in fetching Public Collection List",
-        message: error.message,
-      };
-      navigate("/error", { state });
-    }
-  };
+  const [collection, setCollections] = useState({});
 
   useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        setFetchState({ ...fetchState, loading: true });
+        const api = collectionLink.getCollectionList + `/${collectionQuery}`;
+
+        const response = await axiosInstance.get(api);
+
+        console.log(response.data);
+        if (response.status === 200) {
+          setFetchState({ ...fetchState, loading: false, fetch: true });
+          setCollections(response.data.collection);
+        }
+      } catch (error) {
+        setFetchState({ ...fetchState, loading: false, error: error.message });
+        const state = {
+          code: error.code,
+          title: error.name,
+          location: "in fetching Public Collection List",
+          message: error.message,
+        };
+        // navigate("/error", { state });
+      }
+    };
     fetchCollections();
   }, []);
 
@@ -59,12 +55,47 @@ export default function PublicList() {
           </div>
         </section>
 
+        <section className="my-5">
+          <div className="text-lg">
+            <span className="font-semibold">Description: </span>
+            {collection.description}
+          </div>
+
+          <div className="text-lg">
+            <span className="font-semibold">Shared: </span>
+            <span className="text-xl me-2">
+              {collection?.shared == "public" ? (
+                <i className="fa-solid fa-bullhorn" />
+              ) : collection.shared == "shared" ? (
+                <i className="fa-regular fa-user"></i>
+              ) : (
+                <i className="fa-solid fa-lock"></i>
+              )}
+            </span>
+            {collection?.shared?.toUpperCase()}
+          </div>
+
+          <div className="text-lg">
+            <span className="font-semibold">Owner: </span>@
+            {collection?.owner?.username}
+          </div>
+
+          <div className="text-lg">
+            <span className="font-semibold">Tags: </span>
+            {collection?.tags?.map((tag) => (
+              <span key={tag} className="mx-1 text-base text-blue-400">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </section>
+
         {/* Public Collections */}
         <section>
           <div className="flex text-lg">
             {!fetchState.loading ? (
               fetchState.fetch ? (
-                collections.map((list) => (
+                collection?.link.map((list) => (
                   <div
                     className="card md:w-1/3 p-3 m-3 border-2 border-secondary2 rounded-lg"
                     key={list.name}
@@ -72,13 +103,6 @@ export default function PublicList() {
                     <div className="flex mt-2 justify-between">
                       <div className="w-2/3 card-heading font-bold text-justify">
                         {list.name.toUpperCase()}
-                      </div>
-                      <div className="w-1/12 text-2xl">
-                        {list.shared ? (
-                          <i className="fa-regular fa-user"></i>
-                        ) : (
-                          <i className="fa-solid fa-lock"></i>
-                        )}
                       </div>
                     </div>
                     <hr className="mt-1 mb-3 border-b-2 border-secondary3" />
@@ -88,7 +112,10 @@ export default function PublicList() {
                           {list.description}
                           <br />
                           Owner:
-                          <span className="font-bold mt-2"> Admin</span>
+                          <span className="font-bold mt-2">
+                            {" "}
+                            {collection?.owner.username}
+                          </span>
                         </p>
                       </div>
                       <p className="card-link text-blue-500">

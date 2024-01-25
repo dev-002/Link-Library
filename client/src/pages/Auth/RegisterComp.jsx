@@ -4,8 +4,9 @@ import axios from "axios";
 import { Auth } from "../../API_Endponits";
 // Sub Components
 import Icon from "./Sub-Component/Icon";
+import { useNavigate } from "react-router-dom";
 
-export default function RegisterComp({ setRegisterOpen }) {
+export default function RegisterComp({ setRegisterOpen, setCookie, navigate }) {
   const [user, setUser] = useState({
     username: "",
     email: "",
@@ -24,16 +25,22 @@ export default function RegisterComp({ setRegisterOpen }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user);
     try {
       const response = await axios({
         method: "post",
-        url: Auth.login,
+        url: Auth.register,
         data: user,
       });
-      if (response.status === 200) navigate("/");
+      if (response.status === 201) {
+        setCookie("auth_token", response.data.token);
+        navigate("/");
+      }
     } catch (error) {
-      console.log("Error: " + error.message);
+      if (error.response) {
+        let response = error.response.data;
+        console.log("Error: ", response.error);
+        console.log(response.saveError.keyPattern);
+      } else console.log("Error: ", error.message);
     }
   };
 

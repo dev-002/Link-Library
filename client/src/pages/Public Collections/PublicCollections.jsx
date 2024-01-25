@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../utility/axiosInstance";
 import { PublicCollections as collectionLink } from "../../API_Endponits";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -10,31 +10,30 @@ export default function PublicCollections() {
     error: "",
     fetch: false,
   });
-  const [collections, setCollections] = useState([]);
+  const [collection, setCollections] = useState([]);
 
-  const fetchCollections = async () => {
-    try {
-      setFetchState({ ...fetchState, loading: true });
-      const response = await axios({
-        method: "get",
-        url: collectionLink.getCollections,
-      });
-      if (response.status === 200) {
-        setFetchState({ ...fetchState, loading: false, fetch: true });
-        setCollections(response.data.categories);
-      }
-    } catch (error) {
-      setFetchState({ ...fetchState, loading: false, error: error.message });
-      const state = {
-        code: error.code,
-        title: error.name,
-        location: "in fetching public collections",
-        message: error.message,
-      };
-      navigate("/error", { state });
-    }
-  };
   useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        setFetchState({ ...fetchState, loading: true });
+        const response = await axiosInstance.get(collectionLink.getCollections);
+
+        if (response.status === 200 && response.data) {
+          setFetchState({ ...fetchState, loading: false, fetch: true });
+          setCollections(response.data.collections);
+        }
+      } catch (error) {
+        setFetchState({ ...fetchState, loading: false, error: error.message });
+        const state = {
+          code: error.code,
+          title: error.name,
+          location: "in fetching public collections",
+          message: error.message,
+        };
+        navigate("/error", { state });
+      }
+    };
+
     fetchCollections();
   }, []);
 
@@ -52,15 +51,45 @@ export default function PublicCollections() {
         <section>
           {!fetchState.loading ? (
             fetchState.fetch ? (
-              collections.map((collection) => (
-                <Link
-                  key={collection}
-                  to={`/public/${collection}`}
-                  className="md:w-fit w-full text-xl p-3 border-2 border-secondary2 rounded"
-                >
-                  {collection.toUpperCase()}
-                </Link>
-              ))
+              collection.length > 0 ? (
+                collection.map((collection) => (
+                  <div
+                    key={collection.name}
+                    className="box md:w-fit w-full text-xl py-3 border-2 border-secondary2 rounded"
+                  >
+                    <div className="w-full px-3 pb-3 flex justify-between border-b-2 border-black">
+                      <span className="text-xl font-medium">
+                        {collection.name.toUpperCase()}
+                      </span>
+                      <Link
+                        key={collection.name}
+                        to={`/public/${collection.name}`}
+                        className="text-lg"
+                      >
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                      </Link>
+                    </div>
+
+                    <div className="body mt-3 px-2">
+                      <div className="mb-3 text-lg">
+                        {collection.description}
+                      </div>
+
+                      <div className="flex text-sm font-light text-blue-500">
+                        {collection.tags.map((tag) => (
+                          <span key={tag} className="me-1">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-xl pt-8">
+                  No Public Collection Available
+                </div>
+              )
             ) : (
               <div>
                 <p className="text-lg font-bold">Error: </p>
