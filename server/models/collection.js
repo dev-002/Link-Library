@@ -48,4 +48,16 @@ const listSchema = new Schema({
   },
 });
 
+listSchema.pre("remove", async function (next) {
+  try {
+    // Use $in operator to delete all associated link documents
+    await mongoose
+      .model("link")
+      .deleteMany({ _id: { $in: this.link.map((link) => link._id) } });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = mongoose.model("list", listSchema);

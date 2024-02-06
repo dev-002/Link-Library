@@ -4,8 +4,6 @@ const PublicCollection = async (req, res, next) => {
   const publicCollection = await Collection.find({ shared: "public" });
   const publicCollectionName = [];
 
-  console.log(publicCollection);
-
   publicCollection.forEach((collection) =>
     !publicCollectionName.includes(collection.name)
       ? publicCollectionName.push({
@@ -16,6 +14,7 @@ const PublicCollection = async (req, res, next) => {
       : null
   );
 
+  console.log("Public Collection Fetched");
   return res.status(200).json({
     msg: "Public List Fetched Successfully",
     collections: publicCollectionName,
@@ -29,6 +28,7 @@ const PublicCollectionList = async (req, res, next) => {
     name: categoryParams,
   }).populate("owner");
 
+  console.log("Public Collection List Fetched");
   return res.status(200).json({
     msg: "Public List Fetched Successfully",
     collection: publicCollection,

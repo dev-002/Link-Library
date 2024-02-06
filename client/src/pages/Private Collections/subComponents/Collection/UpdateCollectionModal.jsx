@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import axiosInstance from "../../../utility/axiosInstance";
-import { PrivateCollections as collectionLink } from "../../../API_Endponits";
-import { useParams } from "react-router-dom";
+import axiosInstance from "../../../../utility/axiosInstance";
+import { PrivateCollections as collectionLink } from "../../../../API_Endponits";
+import { useNavigate } from "react-router-dom";
 
 const UpdateCollectionModal = ({
   updateCollectionModal,
@@ -36,6 +36,7 @@ const UpdateCollectionModal = ({
 };
 
 const Form = ({ updateCollectionModal, setUpdateCollectionModal }) => {
+  const navigate = useNavigate();
   const tagRef = useRef();
   const sharedWithRef = useRef();
 
@@ -50,14 +51,7 @@ const Form = ({ updateCollectionModal, setUpdateCollectionModal }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    const updatedFormData = { ...formData };
-    const propertyPath = name.split(".");
-
-    if (propertyPath.length == 1) {
-      updatedFormData[propertyPath[0]] = value;
-    } else if (propertyPath.length == 2) {
-      updatedFormData[propertyPath[0]][[propertyPath[1]]] = value;
-    }
+    const updatedFormData = { ...formData, [name]: value };
     setFormData(updatedFormData);
   };
 
@@ -70,22 +64,28 @@ const Form = ({ updateCollectionModal, setUpdateCollectionModal }) => {
       shared,
     };
     try {
-      console.log(data);
       const api =
         collectionLink.updateCollection +
         `/${updateCollectionModal.collection.name}`;
-      const response = await axiosInstance.post(
+      console.log("Updated data to be sent: ", data);
+
+      const response = await axiosInstance.put(
         api,
         {
+          original: {
+            _id: updateCollectionModal.collection._id,
+            name: updateCollectionModal.collection.name,
+          },
           data,
         },
         { withCredentials: true }
       );
 
-      if (response.status == 201)
+      if (response.status == 201) {
         setUpdateCollectionModal({ status: false, collection: {} });
+        navigate("/private");
+      }
     } catch (error) {
-      console.log(error);
       if (error.response) {
         let response = error.response.data;
         console.log("Error: ", response.message, response.error);
@@ -110,7 +110,14 @@ const Form = ({ updateCollectionModal, setUpdateCollectionModal }) => {
   }, []);
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)} className="py-3 px-5">
+    <form
+      onSubmit={(e) => handleSubmit(e)}
+      className="py-3 px-5"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && e.target.tagName !== "TEXTAREA")
+          e.preventDefault();
+      }}
+    >
       {/* Name */}
       <div className="my-2">
         <label htmlFor="name" className="form-label">
@@ -243,7 +250,11 @@ const Form = ({ updateCollectionModal, setUpdateCollectionModal }) => {
       </div>
 
       {/* Shared With */}
-      <div className="my-2">
+      <div
+        className={`my-2 ${
+          shared !== "shared" && "opacity-50 pointer-events-none"
+        } border-2 rounded`}
+      >
         <label htmlFor="sharedWith" className="form-label">
           Shared With:{" "}
         </label>
@@ -252,10 +263,12 @@ const Form = ({ updateCollectionModal, setUpdateCollectionModal }) => {
           type="text"
           name="sharedWith"
           id="sharedWith"
-          className="border-2 border-blue-800 rounded"
+          className={`${
+            shared == "shared" ? "border-blue-800" : "border-gray-800"
+          } border-2 rounded`}
           ref={sharedWithRef}
+          disabled={shared !== "shared"}
         />
-
         <button
           type="button"
           className="ms-2 px-2 bg-secondary2 rounded text-white  font-bold text-lg"

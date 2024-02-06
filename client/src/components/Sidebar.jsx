@@ -6,7 +6,7 @@ import { User } from "../API_Endponits";
 import axios from "axios";
 
 export default function Sidebar() {
-  const [cookie, setCookie] = useCookies(["auth_token"]);
+  const [cookie, setCookie, removeCookie] = useCookies(["auth_token"]);
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState();
 
@@ -21,17 +21,24 @@ export default function Sidebar() {
         setUsername(response.data.username);
       }
     } catch (error) {
-      setCookie("auth_token", "");
+      removeCookie("auth_token");
       setUsername();
       if (error.response) {
         let response = error.response.data;
         console.log("Error: ", response.message);
-      } else console.log("Error: ", error.message);
+      }
     }
   }
 
+  function handleLogOut() {
+    window.location.pathname = "/";
+    removeCookie("auth_token");
+  }
+
   useEffect(() => {
-    fetchUsername();
+    if (cookie.auth_token) {
+      fetchUsername();
+    }
   }, [cookie]);
 
   return (
@@ -156,6 +163,16 @@ export default function Sidebar() {
                     </Link>
                   </li>
                 </>
+              )}
+              {cookie.auth_token && (
+                <li className="my-3">
+                  <button
+                    className="w-full cursor-pointer text-center rounded-md border border-text bg-secondary px-5 py-3 text-xl font-bold text-primary transition hover:bg-opacity-90"
+                    onClick={() => handleLogOut()}
+                  >
+                    Logout
+                  </button>
+                </li>
               )}
             </ul>
           </aside>

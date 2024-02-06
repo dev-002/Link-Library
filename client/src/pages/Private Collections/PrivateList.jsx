@@ -2,54 +2,45 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utility/axiosInstance";
 import { PrivateCollections as collectionLink } from "../../API_Endponits";
 import { useNavigate, useParams } from "react-router-dom";
-import CreateLinkModel from "./subComponents/CreateLinkModel";
+import CreateLinkModal from "./subComponents/CollectionLink/CreateLinkModel";
+import UpdateLinkModel from "./subComponents/CollectionLink/UpdateLinkModel";
 
 export default function PrivateList() {
-  const collectionQuery = useParams().collectionQuery;
-  const [createLinkModel, setCreateLinkModel] = useState(false);
-
-  return createLinkModel ? (
-    <CreateLinkModel
-      setCreateLinkModel={setCreateLinkModel}
-      collection={collection.link}
-    />
-  ) : (
-    <PrivateListComp
-      setCreateLinkModel={setCreateLinkModel}
-      collectionQuery={collectionQuery}
-    />
-  );
-}
-
-const PrivateListComp = ({ setCreateLinkModel, collectionQuery }) => {
   const navigate = useNavigate();
+
   // States
+  const collectionQuery = useParams().collectionQuery;
+  const [link, setLink] = useState({});
+  const [createLinkModal, setCreateLinkModal] = useState(false);
+  const [updateLinkModal, setUpdateLinkModal] = useState({
+    status: false,
+    link: {},
+  });
   const [fetchState, setFetchState] = useState({
     loading: false,
     error: "",
     fetch: false,
   });
-  const [collection, setCollections] = useState({});
 
   useEffect(() => {
     const fetchCollections = async () => {
       try {
         setFetchState({ ...fetchState, loading: true });
         const api = collectionLink.getCollectionList + `/${collectionQuery}`;
-        const response = await axiosInstance.post(api, null, {
+        const response = await axiosInstance.get(api, {
           withCredentials: true,
         });
         console.log(response);
         if (response.status === 200) {
           setFetchState({ ...fetchState, loading: false, fetch: true });
-          setCollections(response.data.collection);
+          setLink(response.data.collection);
         }
       } catch (error) {
         setFetchState({ ...fetchState, loading: false, error: error.message });
         const state = {
           code: error.code,
           title: error.name,
-          location: "in fetching User Private collections",
+          location: "in fetching User Private collections Link",
           message: error.message,
         };
         // navigate("/error", { state });
@@ -57,7 +48,59 @@ const PrivateListComp = ({ setCreateLinkModel, collectionQuery }) => {
     };
 
     fetchCollections();
-  }, []);
+  }, [createLinkModal]);
+
+  return createLinkModal ? (
+    <CreateLinkModal setCreateLinkModal={setCreateLinkModal} />
+  ) : updateLinkModal.status ? (
+    <UpdateLinkModel
+      setUpdateLinkModal={setUpdateLinkModal}
+      updateLinkModal={updateLinkModal}
+    />
+  ) : (
+    <PrivateListComp
+      setCreateLinkModal={setCreateLinkModal}
+      collectionQuery={collectionQuery}
+      fetchState={fetchState}
+      link={link}
+      setUpdateLinkModal={setUpdateLinkModal}
+    />
+  );
+}
+
+const PrivateListComp = ({
+  setCreateLinkModal,
+  collectionQuery,
+  fetchState,
+  link,
+  setUpdateLinkModal,
+}) => {
+  const navigate = useNavigate();
+
+  async function handleDelete(link) {
+    const api = collectionLink.removeCollection + `/${collectionQuery}/remove`;
+
+    try {
+      const response = await axiosInstance.delete(api, {
+        data: { link_id: link._id },
+        withCredentials: true,
+      });
+
+      console.log(response);
+      if (response.status === 200) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+      const state = {
+        code: error.code,
+        title: error.name,
+        location: "in fetching User Private collections",
+        message: error.message,
+      };
+      navigate("/error", { state });
+    }
+  }
 
   return (
     <>
@@ -74,7 +117,7 @@ const PrivateListComp = ({ setCreateLinkModel, collectionQuery }) => {
           <div className="w-1/12 md:text-3xl text-lg cursor-pointer">
             <i
               className="fa-solid fa-square-plus"
-              onClick={() => setCreateLinkModel(true)}
+              onClick={() => setCreateLinkModal(true)}
             ></i>
           </div>
         </section>
@@ -83,31 +126,31 @@ const PrivateListComp = ({ setCreateLinkModel, collectionQuery }) => {
         <section className="my-5">
           <div className="text-lg">
             <span className="font-semibold">Description: </span>
-            {collection && collection.description}
+            {link && link.description}
           </div>
 
           <div className="text-lg">
             <span className="font-semibold">Shared: </span>
             <span className="text-xl me-2">
-              {collection?.shared == "public" ? (
+              {link?.shared == "public" ? (
                 <i className="fa-solid fa-bullhorn" />
-              ) : collection?.shared == "shared" ? (
+              ) : link?.shared == "shared" ? (
                 <i className="fa-regular fa-user"></i>
               ) : (
                 <i className="fa-solid fa-lock"></i>
               )}
             </span>
-            {collection?.shared?.toUpperCase()}
+            {link?.shared?.toUpperCase()}
           </div>
 
           <div className="text-lg">
             <span className="font-semibold">Owner: </span>@
-            {collection && collection?.owner?.username}
+            {link && link?.owner?.username}
           </div>
 
           <div className="text-lg">
             <span className="font-semibold">Tags: </span>
-            {collection?.tags?.map((tag) => (
+            {link?.tags?.map((tag) => (
               <span key={tag} className="mx-1 text-base text-blue-400">
                 #{tag}
               </span>
@@ -120,41 +163,40 @@ const PrivateListComp = ({ setCreateLinkModel, collectionQuery }) => {
           <div className="flex text-lg">
             {!fetchState.loading ? (
               fetchState.fetch ? (
-                collection?.link.map((list) => (
+                link?.link.map((list) => (
                   <div
                     className="card md:w-1/3 p-3 m-3 border-2 border-secondary2 rounded-lg"
                     key={list.name}
                   >
-                    <div className="flex mt-2 justify-between">
-                      <div className="w-2/3 card-heading font-bold text-justify">
-                        {list.name.toUpperCase()}
-                      </div>
+                    <div className="w-full px-3 pb-3 flex justify-between border-b-2 border-black">
+                      <span className="text-xl font-medium text-clip overflow-hidden">
+                        {link.name.toUpperCase()}
+                      </span>
+                      <a href={list.link} target="_blank">
+                        <i className="fa-solid fa-link text-lg"></i>
+                      </a>
                     </div>
 
-                    <hr className="mt-1 mb-3 border-b-2 border-secondary3" />
-                    <div className="card-body">
-                      <div className="card-text">
-                        <p>
-                          {list.description}
-                          <br />
-                          Owner:
-                          <span className="font-bold mt-2">
-                            {" "}
-                            {collection?.owner.username}
-                          </span>
-                        </p>
-                      </div>
-                      <p className="card-link text-blue-500">
-                        <a href={list.link}>{list.link}</a>
-                      </p>
+                    <div className="py-2 text-wrap overflow-hidden text-lg border-b-2 border-black">
+                      {list.description}
                     </div>
 
-                    <hr className="mt-1 mb-3 border-b-2 border-secondary3" />
-                    <div className="flex justify-evenly">
-                      <button className="m-1 py-1 px-2 bg-blue-500 rounded">
+                    <div className="mt-2 text-lg flex justify-evenly">
+                      <button
+                        className="m-1 px-2 py-1 bg-blue-500 rounded hover:bg-blue-700 hover:text-white hover:shadow-blue-500/50 shadow-lg"
+                        onClick={() => {
+                          setUpdateLinkModal({
+                            status: true,
+                            link,
+                          });
+                        }}
+                      >
                         Edit <i className="fa-solid fa-pen-to-square mx-1"></i>
                       </button>
-                      <button className="m-1 py-1 px-2 bg-red-500 rounded">
+                      <button
+                        className="m-1 px-2 py-1 bg-red-500 rounded hover:bg-red-700 hover:text-white hover:shadow-red-500/50 shadow-lg"
+                        onClick={() => handleDelete(link)}
+                      >
                         Delete <i className="fa-solid fa-trash mx-1"></i>
                       </button>
                     </div>

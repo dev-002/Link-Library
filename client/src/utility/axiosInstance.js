@@ -6,6 +6,7 @@ instance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { response } = error;
+    console.log(response);
 
     if (response && response.status === 401) {
       try {
@@ -25,7 +26,7 @@ instance.interceptors.response.use(
       } catch (refreshError) {
         // If token refresh fails, handle it accordingly
         console.error("Token refresh failed:", refreshError);
-        window.location.href = "http://localhost:5173/auth";
+        // window.location.href = "http://localhost:5173/auth";
       }
     }
 

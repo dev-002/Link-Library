@@ -37,6 +37,8 @@ const PrivateCollections = {
   updateCollection: baseURL + "/private",
 
   getCollectionList: baseURL + "/private",
+  // /private/:collectionName
+  addCollectionList: baseURL + "/private",
   // /private/:collectionName/update
   updateCollectionList: baseURL + "/private",
   // /private/:collectionName/remove

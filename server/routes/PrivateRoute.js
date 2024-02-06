@@ -9,6 +9,7 @@ const {
   getPrivateCollectionList,
   updatePrivateCollectionList,
   deletePrivateCollectionList,
+  addPrivateCollectionList,
 } = require("../controllers/PrivateController");
 const router = express.Router();
 
@@ -17,7 +18,8 @@ router.post("/", createPrivateCollection);
 router.put("/:collectionName", updatePrivateCollection);
 router.delete("/:collectionName", deletePrivateCollection);
 
-router.post("/:collectionName", getPrivateCollectionList);
+router.get("/:collectionName", getPrivateCollectionList);
+router.post("/:collectionName", addPrivateCollectionList);
 router.put("/:collectionName/update", updatePrivateCollectionList);
 router.delete("/:collectionName/remove", deletePrivateCollectionList);
 

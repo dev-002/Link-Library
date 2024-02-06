@@ -1,6 +1,8 @@
+// https://archiveofourown.org/works/search?commit=Search&page=5&view_adult=true&work_search%5Barchive_warning_ids%5D%5B%5D=17&work_search%5Barchive_warning_ids%5D%5B%5D=19&work_search%5Barchive_warning_ids%5D%5B%5D=20&work_search%5Bbookmarks_count%5D=&work_search%5Bcharacter_names%5D=&work_search%5Bcomments_count%5D=&work_search%5Bcomplete%5D=&work_search%5Bcreators%5D=&work_search%5Bcrossover%5D=&work_search%5Bfandom_names%5D=&work_search%5Bfreeform_names%5D=&work_search%5Bhits%5D=&work_search%5Bkudos_count%5D=&work_search%5Blanguage_id%5D=&work_search%5Bquery%5D=Hermione+Granger&work_search%5Brating_ids%5D=13&work_search%5Brelationship_names%5D=&work_search%5Brevised_at%5D=&work_search%5Bsingle_chapter%5D=0&work_search%5Bsort_column%5D=_score&work_search%5Bsort_direction%5D=desc&work_search%5Btitle%5D=&work_search%5Bword_count%5D=
 import React, { useState, useRef, useEffect } from "react";
-import axiosInstance from "../../../utility/axiosInstance";
-import { PrivateCollections as collectionLink } from "../../../API_Endponits";
+import axiosInstance from "../../../../utility/axiosInstance";
+import { PrivateCollections as collectionLink } from "../../../../API_Endponits";
+import { useNavigate } from "react-router-dom";
 
 const PrivateListCreate = ({ setCreateModel }) => {
   return (
@@ -32,11 +34,11 @@ const Form = ({ setCreateModel }) => {
 
   const [formData, setFormData] = useState({
     name: "",
-    link: {
-      name: "",
-      link: "",
-      description: "",
-    },
+    // link: {
+    //   name: "",
+    //   link: "",
+    //   description: "",
+    // },
     description: "",
   });
   const [sharedWith, setSharedWith] = useState([]);
@@ -91,6 +93,13 @@ const Form = ({ setCreateModel }) => {
 
   function handleKeyPress(e) {
     if (e.key == "Escape") {
+      setFormData({
+        name: "",
+        description: "",
+      });
+      setSharedWith([]);
+      setTags([]);
+      setShared("public");
       setCreateModel(false);
     }
   }
@@ -101,7 +110,14 @@ const Form = ({ setCreateModel }) => {
   }, []);
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)} className="py-3 px-5">
+    <form
+      onSubmit={(e) => handleSubmit(e)}
+      className="py-3 px-5"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && e.target.tagName !== "TEXTAREA")
+          e.preventDefault();
+      }}
+    >
       {/* Name */}
       <div className="my-2">
         <label htmlFor="name" className="form-label">
@@ -115,57 +131,6 @@ const Form = ({ setCreateModel }) => {
           onChange={(e) => handleChange(e)}
           value={formData.name}
         />
-      </div>
-
-      {/* Link Form */}
-      <div className="p-1 border border-black rounded">
-        {/* Link Name */}
-        <div className="my-2">
-          <label htmlFor="linkname" className="form-label">
-            Link Name:{" "}
-          </label>
-          <input
-            type="text"
-            name="link.name"
-            id="linkname"
-            className="w-full border-2 border-blue-800 rounded"
-            onChange={(e) => handleChange(e)}
-            value={formData.link.name}
-          />
-        </div>
-
-        {/* Link */}
-        <div className="my-2">
-          <label htmlFor="link" className="form-label">
-            Link:{" "}
-          </label>
-          <input
-            type="text"
-            name="link.link"
-            id="link"
-            className="w-full border-2 border-blue-800 rounded"
-            onChange={(e) => handleChange(e)}
-            value={formData.link.link}
-          />
-          <div className="text-sm font-light">Please enter the exact link</div>
-        </div>
-
-        {/* Link Description */}
-        <div className="my-2">
-          <label htmlFor="linkdescription" className="form-label">
-            Link Description:{" "}
-          </label>
-          <br />
-          <textarea
-            name="link.description"
-            id="linkdescription"
-            rows={2}
-            style={{ resize: "none" }}
-            className="w-full border-2 border-blue-800 rounded"
-            onChange={(e) => handleChange(e)}
-            value={formData.link.description}
-          />
-        </div>
       </div>
 
       {/* Desctiption */}
@@ -285,7 +250,11 @@ const Form = ({ setCreateModel }) => {
       </div>
 
       {/* Shared With */}
-      <div className="my-2">
+      <div
+        className={`my-2 ${
+          shared !== "shared" && "opacity-50 pointer-events-none"
+        } border-2 rounded`}
+      >
         <label htmlFor="sharedWith" className="form-label">
           Shared With:{" "}
         </label>
@@ -294,8 +263,11 @@ const Form = ({ setCreateModel }) => {
           type="text"
           name="sharedWith"
           id="sharedWith"
-          className="border-2 border-blue-800 rounded"
+          className={`${
+            shared == "shared" ? "border-blue-800" : "border-gray-800"
+          } border-2 rounded`}
           ref={sharedWithRef}
+          disabled={shared !== "shared"}
         />
 
         <button

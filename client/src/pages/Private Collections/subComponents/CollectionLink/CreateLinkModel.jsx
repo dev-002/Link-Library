@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../../../utility/axiosInstance";
-import { PrivateCollections as collectionLink } from "../../../API_Endponits";
+import axiosInstance from "../../../../utility/axiosInstance";
+import { PrivateCollections as collectionLink } from "../../../../API_Endponits";
 
 export default function CreateLinkModel({ setCreateLinkModel, collection }) {
   return (

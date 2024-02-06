@@ -48,17 +48,17 @@ export default function PublicCollections() {
         </section>
 
         {/* Public Collections */}
-        <section>
+        <section className="grid grid-flow-row sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {!fetchState.loading ? (
             fetchState.fetch ? (
               collection.length > 0 ? (
                 collection.map((collection) => (
                   <div
                     key={collection.name}
-                    className="box md:w-fit w-full text-xl py-3 border-2 border-secondary2 rounded"
+                    className="px-2 h-fit my-2 w-full md:w-full md:mx-2 text-xl py-3 border-2 border-secondary2 rounded"
                   >
                     <div className="w-full px-3 pb-3 flex justify-between border-b-2 border-black">
-                      <span className="text-xl font-medium">
+                      <span className="text-xl font-medium text-clip overflow-hidden">
                         {collection.name.toUpperCase()}
                       </span>
                       <Link
@@ -75,9 +75,9 @@ export default function PublicCollections() {
                         {collection.description}
                       </div>
 
-                      <div className="flex text-sm font-light text-blue-500">
+                      <div className="flex-wrap text-sm font-normal text-blue-500 overflow-hidden">
                         {collection.tags.map((tag) => (
-                          <span key={tag} className="me-1">
+                          <span key={tag} className="inline-block me-1 mb-1">
                             #{tag}
                           </span>
                         ))}

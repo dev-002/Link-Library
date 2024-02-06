@@ -1,6 +1,5 @@
 const User = require("../models/user");
 const List = require("../models/collection");
-const getuser = require("../utilities/getUser");
 const Collection = require("../models/collection");
 
 const getPrivateCollection = async (req, res, next) => {
@@ -10,7 +9,7 @@ const getPrivateCollection = async (req, res, next) => {
     const user = await User.findOne({ _id: user_id }).populate("collections");
     //  Check if user is valid
     if (user) {
-      console.log(user.collections);
+      console.log("Colleciton Fetched");
       return res.status(200).json({
         msg: "All list fetched",
         privateCollections: user.collections,
@@ -21,46 +20,42 @@ const getPrivateCollection = async (req, res, next) => {
 
 const createPrivateCollection = async (req, res, next) => {
   const { _id: owner } = res.locals.tokenData;
-  const {
-    name,
-    description,
-    link, // [{ linkName, linkDescription, link }]
-    tags,
-    shared,
-    sharedWith,
-  } = req.body.data;
+  const { name, description, tags, shared, sharedWith } = req.body.data;
 
   // Check if user_id provided
   if (owner) {
-    const user = await getuser(owner);
+    const user = await User.findOne({ _id: owner }).populate("collections");
     //  Check if user is valid
     if (user) {
-      // Add a new collection
+      // Data cleansing for shared With array of string to array of Object Id
+      let sharedWithUsername = [];
+      await Promise.all(
+        sharedWith.map(async (id) => {
+          let user = await User.findOne({ username: id });
+          if (user) sharedWithUsername.push(user._id);
+        })
+      );
+
       try {
         const newList = await List.create({
           name: name,
-          link: {
-            name: link.name,
-            description: link.description,
-            link: link.link,
-          },
           description: description,
           tags: tags,
           shared,
-          sharedWith,
+          sharedWith: sharedWithUsername,
           owner,
         });
-
         user.collections.push(newList._id);
       } catch (error) {
         return res.status(400).json({ message: "Duplicate Values", error });
       }
-
       await user.save();
+
       // Fetch newly updated data
       const { collections } = await User.findOne({
         _id: owner,
       }).populate("collections");
+      console.log("New Collection Created");
       return res
         .status(201)
         .json({ msg: "List Added Successfully", collections });
@@ -69,7 +64,8 @@ const createPrivateCollection = async (req, res, next) => {
 };
 
 const deletePrivateCollection = async (req, res, next) => {
-  const { _id: owner } = req.locals.tokenData;
+  console.log("Deleting Collection", req.body);
+  const { _id: owner } = res.locals.tokenData;
   const { collection_id } = req.body;
   // Check if user_id provided
   if (owner) {
@@ -88,23 +84,11 @@ const deletePrivateCollection = async (req, res, next) => {
         await User.findByIdAndUpdate(owner, {
           $pull: { collections: collection_id },
         });
-
-        // Function to remove the deleted list from the user collections
-        // user.collections = user.collections.filter(({ _id }) => {
-        //   return !_id.equals(collection_id);
-        // });
-        // await user.save();
-
-        // Fetch newly updated data
-        const { collections: list } = await User.findOne({
-          _id: owner,
-        })
-          .populate("collections")
-          .populate("link");
+        console.log("Collection Deleted Successfully");
 
         return res.status(200).json({
           msg: "List Removed Successfully",
-          list,
+          acknowledged: true,
         });
       } else return res.status(404).json({ error: "No List Found" });
     } else return res.status(404).json({ error: "No user Found" });
@@ -112,42 +96,36 @@ const deletePrivateCollection = async (req, res, next) => {
 };
 
 const updatePrivateCollection = async (req, res, next) => {
-  const { _id: owner } = req.locals.tokenData;
-  const { updated_List } = req.body;
+  const { _id: owner } = res.locals.tokenData;
+  const { data, original } = req.body;
   // Check if user_id provided
   if (owner) {
-    const collection = await Collection.findOne({
-      _id: updated_List._id,
-    });
-    // Check if collection is valid
-    if (collection) {
+    try {
       // Updation
-      const update = await Collection.updateOne(
-        { _id: updated_List._id, owner },
-        { ...updated_List }
+      const update = await Collection.findOneAndUpdate(
+        { _id: original._id, name: original.name, owner },
+        { ...data },
+        { new: true }
       );
-      if (update.acknowledged) {
-        // Fetch newly updated data
-        const { collections: list } = await Collection.findOne({
-          _id: updated_List._id,
-          owner,
-        }).populate("link");
-
-        return res.json({
+      if (update) {
+        console.log("Collection Updated Successfully");
+        return res.status(201).json({
           msg: "List Updated Successfully",
-          list,
+          acknowledged: true,
         });
-      } else
-        return res.status(400).json({
-          error: "Error occured during updation",
-        });
-    } else return res.status(404).json({ error: "No List Found" });
+      } else return res.status(404).json({ error: "No List Found" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: "Server Error in Collection Updation" });
+    }
   } else return res.status(400).json({ error: "JWT expired" });
 };
 
 const getPrivateCollectionList = async (req, res, next) => {
   const { _id: owner } = res.locals.tokenData;
   const queryCollection = req.params.collectionName;
+  console.log(owner, queryCollection);
   // Check if user_id provided
   if (owner) {
     // Check if Collection is valid
@@ -159,6 +137,7 @@ const getPrivateCollectionList = async (req, res, next) => {
       .populate("owner");
 
     if (collection) {
+      console.log("Collection Link Fetched");
       return res.status(200).json({
         success: true,
         msg: `Collection List Fetched Successfully: ${queryCollection}`,
@@ -171,48 +150,92 @@ const getPrivateCollectionList = async (req, res, next) => {
   } else return res.status(400).json({ error: "JWT expired" });
 };
 
+const addPrivateCollectionList = async (req, res, next) => {
+  const { _id: owner } = res.locals.tokenData;
+  const { name, description, tags, shared, sharedWith } = req.body.data;
+
+  // Check if user_id provided
+  if (owner) {
+    const user = await User.findOne({ _id: owner }).populate("collections");
+    //  Check if user is valid
+    if (user) {
+      // Data cleansing for shared With array of string to array of Object Id
+      let sharedWithUsername = [];
+      await Promise.all(
+        sharedWith.map(async (id) => {
+          let user = await User.findOne({ username: id });
+          if (user) sharedWithUsername.push(user._id);
+        })
+      );
+
+      try {
+        const newList = await List.create({
+          name: name,
+          description: description,
+          tags: tags,
+          shared,
+          sharedWith: sharedWithUsername,
+          owner,
+        });
+        user.collections.push(newList._id);
+      } catch (error) {
+        return res.status(400).json({ message: "Duplicate Values", error });
+      }
+      await user.save();
+
+      // Fetch newly updated data
+      const { collections } = await User.findOne({
+        _id: owner,
+      }).populate("collections");
+      console.log("New Collection Created");
+      return res
+        .status(201)
+        .json({ msg: "List Added Successfully", collections });
+    } else return res.status(404).json({ error: "No user Found" });
+  } else return res.status(400).json({ error: "JWT expired" });
+};
+
 const updatePrivateCollectionList = async (req, res, next) => {
-  const { _id: owner } = req.locals.tokenData;
+  const { _id: owner } = res.locals.tokenData;
   const queryCollection = req.params.collectionName;
   const { link_id, updatedLink } = req.body;
   // Check if user_id provided
   if (owner) {
-    const user = getuser(owner);
+    const user = await User.findOne({ _id: owner }).populate("collections");
     //  Check if user is valid
     if (user) {
-      const collection = await Collection.findOne({
-        name: queryCollection,
-        owner,
-      }).populate("link");
-
-      if (collection) {
-        const acknowledged = await Collection.updateOne(
+      try {
+        const acknowledged = await Collection.findOneAndUpdate(
           { "link._id": link_id, name: queryCollection, owner },
           { $set: { "link.$": updatedLink } }
         );
 
         if (acknowledged.acknowledged) {
+          console.log("Collection Link Updated Successfully");
           // Send the acknowledgement
           return res.status(200).json({
             msg: "List Updated Successfully",
             acknowledged: true,
           });
-        } else
-          return res
-            .status(500)
-            .json({ acknowledged: false, error: "List deletion failed" });
-      } else return res.status(404).json({ error: "No collection found" });
+        } else {
+          return res.status(404).json({ error: "No collection found" });
+        }
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ acknowledged: false, error: "List updation failed" });
+      }
     } else return res.status(404).json({ error: "No user Found" });
   } else return res.status(400).json({ error: "JWT expired" });
 };
 
 const deletePrivateCollectionList = async (req, res, next) => {
-  const { _id: owner, role } = req.locals.tokenData;
+  const { _id: owner, role } = res.locals.tokenData;
   const queryCollection = req.params.collectionName;
-  const { link_id } = req.body;
+  const { link_id } = req.body.data;
   // Check if user_id provided
   if (owner) {
-    const user = getuser(owner);
+    const user = await User.findOne({ _id: owner }).populate("collections");
     //  Check if user is valid
     if (user) {
       const collection = await Collection.findOne({
@@ -232,6 +255,7 @@ const deletePrivateCollectionList = async (req, res, next) => {
         );
 
         if (acknowledged.acknowledged) {
+          console.log("Collection Link Deleted Successfully");
           // Send the acknowledgement
           return res.status(200).json({
             msg: "List Removed Successfully",
@@ -254,6 +278,7 @@ module.exports = {
   updatePrivateCollection,
   // List
   getPrivateCollectionList,
+  addPrivateCollectionList,
   updatePrivateCollectionList,
   deletePrivateCollectionList,
 };

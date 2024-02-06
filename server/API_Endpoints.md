@@ -37,7 +37,8 @@ List of all the api endpoints for easy access for development and testing purpos
 - **PUT /private/:collectionName** - Update a Collection
 
 - **GET /private/:collectionName** - Get collection by collection Name
-- **POST /private/:collectionName/update** - Update collection link
+- **POST /private/:collectionName** - Add collection Link
+- **PUT /private/:collectionName/update** - Update collection link
 - **DELETE /private/:collectionName/remove** - Delete collection link
 
 ### Report Collection
