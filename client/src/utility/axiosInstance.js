@@ -6,8 +6,6 @@ instance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { response } = error;
-    console.log(response);
-
     if (response && response.status === 401) {
       try {
         // Attempt to refresh the token

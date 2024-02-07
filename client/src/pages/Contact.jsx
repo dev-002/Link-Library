@@ -23,12 +23,12 @@ export default function Contact() {
   return (
     <>
       {/* Contact Form */}
-      <div className="md:h-fit h-screen flex flex-col justify-center">
-        <p className="text-xl font-bold text-center mb-4">Contact Us</p>
+      <div className="py-5 md:h-fit h-screen flex flex-col justify-center">
+        <p className="text-2xl font-bold text-center mb-4">Contact Us</p>
         <section className="my-5 text-white bg-secondary2 p-5">
           <div className="container">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="w-[33%]">
+            <div className="flex justify-center">
+              <div className="w-[30%]">
                 <form
                   className="ps-5 max-w-[80%]"
                   onSubmit={(e) => handleSumbit(e)}
@@ -90,7 +90,8 @@ export default function Contact() {
                   </div>
                 </form>
               </div>
-              <div className="md:block hidden w-full text-center ms-5 max-w-[40%] bg-[url('./resources/Home_contact.jpg')] bg-auto bg-no-repeat"></div>
+              {/* BG Image */}
+              <div className="w-full hidden ms-5 md:block bg-[url('./resources/Home_contact.jpg')] bg-auto bg-no-repeat" />
             </div>
           </div>
         </section>

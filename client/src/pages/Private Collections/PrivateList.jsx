@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utility/axiosInstance";
 import { PrivateCollections as collectionLink } from "../../API_Endponits";
 import { useNavigate, useParams } from "react-router-dom";
-import CreateLinkModal from "./subComponents/CollectionLink/CreateLinkModel";
+import AddLinkModal from "./subComponents/CollectionLink/CreateLinkModel";
 import UpdateLinkModel from "./subComponents/CollectionLink/UpdateLinkModel";
 
 export default function PrivateList() {
@@ -30,7 +30,6 @@ export default function PrivateList() {
         const response = await axiosInstance.get(api, {
           withCredentials: true,
         });
-        console.log(response);
         if (response.status === 200) {
           setFetchState({ ...fetchState, loading: false, fetch: true });
           setLink(response.data.collection);
@@ -51,11 +50,15 @@ export default function PrivateList() {
   }, [createLinkModal]);
 
   return createLinkModal ? (
-    <CreateLinkModal setCreateLinkModal={setCreateLinkModal} />
+    <AddLinkModal
+      setCreateLinkModal={setCreateLinkModal}
+      collectionName={collectionQuery}
+    />
   ) : updateLinkModal.status ? (
     <UpdateLinkModel
       setUpdateLinkModal={setUpdateLinkModal}
       updateLinkModal={updateLinkModal}
+      collectionName={collectionQuery}
     />
   ) : (
     <PrivateListComp
@@ -77,13 +80,16 @@ const PrivateListComp = ({
 }) => {
   const navigate = useNavigate();
 
-  async function handleDelete(link) {
+  async function handleDelete(list) {
     const api = collectionLink.removeCollection + `/${collectionQuery}/remove`;
 
     try {
       const response = await axiosInstance.delete(api, {
-        data: { link_id: link._id },
         withCredentials: true,
+        data: {
+          collectionName: collectionQuery,
+          link_id: list._id,
+        },
       });
 
       console.log(response);
@@ -98,7 +104,7 @@ const PrivateListComp = ({
         location: "in fetching User Private collections",
         message: error.message,
       };
-      navigate("/error", { state });
+      // navigate("/error", { state });
     }
   }
 
@@ -170,7 +176,7 @@ const PrivateListComp = ({
                   >
                     <div className="w-full px-3 pb-3 flex justify-between border-b-2 border-black">
                       <span className="text-xl font-medium text-clip overflow-hidden">
-                        {link.name.toUpperCase()}
+                        {list.name.toUpperCase()}
                       </span>
                       <a href={list.link} target="_blank">
                         <i className="fa-solid fa-link text-lg"></i>
@@ -187,7 +193,7 @@ const PrivateListComp = ({
                         onClick={() => {
                           setUpdateLinkModal({
                             status: true,
-                            link,
+                            link: { ...link, link: list },
                           });
                         }}
                       >
@@ -195,7 +201,7 @@ const PrivateListComp = ({
                       </button>
                       <button
                         className="m-1 px-2 py-1 bg-red-500 rounded hover:bg-red-700 hover:text-white hover:shadow-red-500/50 shadow-lg"
-                        onClick={() => handleDelete(link)}
+                        onClick={() => handleDelete(list)}
                       >
                         Delete <i className="fa-solid fa-trash mx-1"></i>
                       </button>

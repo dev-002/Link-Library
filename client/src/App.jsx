@@ -10,7 +10,7 @@ import PublicCollections from "./pages/Public Collections/PublicCollections";
 import PubilcList from "./pages/Public Collections/PublicList";
 import PrivateCollections from "./pages/Private Collections/PrivateCollection";
 import PrivateList from "./pages/Private Collections/PrivateList";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import Setting from "./pages/Settings";
 import Contact from "./pages/Contact";
 import Error from "./pages/Error";

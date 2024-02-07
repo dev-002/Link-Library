@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axiosInstance from "../../../../utility/axiosInstance";
 import { PrivateCollections as collectionLink } from "../../../../API_Endponits";
-import { useNavigate } from "react-router-dom";
 
 const PrivateListCreate = ({ setCreateModel }) => {
   return (
@@ -34,11 +33,6 @@ const Form = ({ setCreateModel }) => {
 
   const [formData, setFormData] = useState({
     name: "",
-    // link: {
-    //   name: "",
-    //   link: "",
-    //   description: "",
-    // },
     description: "",
   });
   const [sharedWith, setSharedWith] = useState([]);
@@ -91,20 +85,20 @@ const Form = ({ setCreateModel }) => {
     }
   };
 
-  function handleKeyPress(e) {
-    if (e.key == "Escape") {
-      setFormData({
-        name: "",
-        description: "",
-      });
-      setSharedWith([]);
-      setTags([]);
-      setShared("public");
-      setCreateModel(false);
-    }
-  }
-
   useEffect(() => {
+    function handleKeyPress(e) {
+      if (e.key == "Escape") {
+        setFormData({
+          name: "",
+          description: "",
+        });
+        setSharedWith([]);
+        setTags([]);
+        setShared("public");
+        setCreateModel(false);
+      }
+    }
+
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);

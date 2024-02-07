@@ -10,7 +10,7 @@ export default function About() {
               className="text-3xl font-bold py-4"
               style={{ fontFamily: "'Young Serif', serif" }}
             >
-              "The need to Organize"
+              "The need to be Perfect"
             </p>
             <p className="text-2xl">
               <strong>Our Mission</strong> <br /> At LinkStash, our mission is
