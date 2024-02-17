@@ -1,13 +1,13 @@
 {
   "name": "linklibrary",
   "version": "1.0.0",
-  "description": "",
+  "description": "Link Library server for managing and sharing the collection of link of online tools, links, personal collection, etc",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "author": "Devansh",
+  "author": "Devansh Gupta",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
