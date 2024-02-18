@@ -7,7 +7,7 @@ import { Auth } from "../../API_Endponits";
 import RegisterComp from "./RegisterComp";
 
 export default function Login() {
-  const [cookie, setCookie] = useCookies(["token"]);
+  const [cookie, setCookie] = useCookies(["auth_token"]);
   const navigate = useNavigate();
   const [registerOpen, setRegisterOpen] = useState(false);
 
@@ -60,7 +60,7 @@ const LoginComp = ({ setRegisterOpen, setCookie, navigate }) => {
       });
       if (response.status === 200) {
         console.log(response.data);
-        setCookie("auth_token", response.data.token);
+        if (response.data.token) setCookie("auth_token", response.data.token);
         navigate("/");
       }
     } catch (error) {

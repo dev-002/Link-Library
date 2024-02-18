@@ -1,8 +1,9 @@
 /*
 This File provides all the api endpoints already setup in the server(for localhost) for the development purpose 
+"http://localhost:5000/api/v1"; 
 */
 
-const baseURL = "http://localhost:5000/api/v1";
+const baseURL = "https://linklibrary-api.onrender.com/api/v1";
 
 const Contact = {
   contact: baseURL + "/contact",
